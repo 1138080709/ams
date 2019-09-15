@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ams.user.dao.UserDao">
+	<resultMap id="BaseResultMap" type="com.ams.user.entity.User">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="digits" property="digits" jdbcType="VARCHAR" />
+		<result column="department" property="department"
+			jdbcType="VARCHAR" />
+		<result column="major" property="major" jdbcType="VARCHAR" />
+		<result column="belongClass" property="belongClass"
+			jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="password" property="password"
+			jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="jobId" property="jobId" jdbcType="VARCHAR" />
+		<result column="belongId" property="belongId"
+			jdbcType="VARCHAR" />
+		<result column="roleFlag" property="roleFlag"
+			jdbcType="INTEGER" />
+		<result column="financeFlag" property="financeFlag"
+			jdbcType="INTEGER" />
+		<result column="createTime" property="createTime"
+			jdbcType="VARCHAR" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, name, digits, department, major, belongClass, grade,
+		password, phone,
+		email,
+		jobId, belongId, roleFlag, financeFlag,
+		createTime, delFlag
+	</sql>
+	<select id="getUserById" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		where delFlag=0
+		and Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getUserByDigits" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		where delFlag=0
+		and digits=#{digits,jdbcType=VARCHAR}
+	</select>
+	<select id="getUserCountByJobId" resultType="java.lang.Integer">
+		select count(*)
+		from
+		user
+		where delFlag=0
+		and jobId=#{selectJobId,jdbcType=VARCHAR}
+	</select>
+	<select id="getUserByDepartmentId"
+		resultType="com.ams.user.entity.User">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
+		and belongId=#{departmentId}
+		<if test="queryInfo != null and queryInfo != ''">
+			and name like concat(#{queryInfo},"%")
+		</if>
+		limit #{offset},#{limit}
+	</select>
+	<select id="getMemberCountByDepartmentId"
+		resultType="java.lang.Integer">
+		select count(*)
+		from user
+		where delFlag=0
+		and
+		belongId=#{departmentId,jdbcType=VARCHAR}
+	</select>
+	<update id="updatePasswordByDigits">
+		update user
+		<set>
+			<if test="encryptPassword != null and encryptPassword != ''">
+				password=#{encryptPassword,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where digits=#{digits,jdbcType=VARCHAR}
+	</update>
+	<update id="updateById" parameterType="com.ams.user.entity.User">
+		update user
+		<set>
+			<if test="name != null and name!=''">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="digits != null and digits!= ''">
+				digits = #{digits,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null and department !=''">
+				department = #{department,jdbcType=VARCHAR},
+			</if>
+			<if test="major != null and major != ''">
+				major = #{major,jdbcType=VARCHAR},
+			</if>
+			<if test="belongClass != null and belongClass !=''">
+				belongClass = #{belongClass,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null and grade !=''">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != ''">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+		and delFlag=0
+	</update>
+	<update id="updateJobById">
+		update user
+		<set>
+			<if test="memberJobId!=null and memberJobId!=''">
+				jobId=#{memberJobId,jdbcType=VARCHAR},
+			</if>
+			<if test="roleFlag!=null and roleFlag!=''">
+				roleFlag=#{roleFlag,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where Id=#{memberId,jdbcType=VARCHAR}
+		and delFlag=0
+	</update>
+
+
+
+
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from user
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.ams.user.entity.User">
+		insert into user (Id, name,
+		digits,
+		department, major, belongClass,
+		grade, password, phone,
+		email,
+		jobId, belongId,
+		roleFlag, financeFlag, createTime,
+		delFlag)
+		values
+		(#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+		#{digits,jdbcType=VARCHAR},
+		#{department,jdbcType=VARCHAR},
+		#{major,jdbcType=VARCHAR}, #{belongclass,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{jobid,jdbcType=VARCHAR}, #{belongid,jdbcType=VARCHAR},
+		#{roleflag,jdbcType=INTEGER}, #{financeflag,jdbcType=INTEGER},
+		#{createtime,jdbcType=VARCHAR},
+		#{delflag,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.ams.user.entity.User">
+		insert into user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="digits != null">
+				digits,
+			</if>
+			<if test="department != null">
+				department,
+			</if>
+			<if test="major != null">
+				major,
+			</if>
+			<if test="belongclass != null">
+				belongClass,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="jobid != null">
+				jobId,
+			</if>
+			<if test="belongid != null">
+				belongId,
+			</if>
+			<if test="roleflag != null">
+				roleFlag,
+			</if>
+			<if test="financeflag != null">
+				financeFlag,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="digits != null">
+				#{digits,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null">
+				#{department,jdbcType=VARCHAR},
+			</if>
+			<if test="major != null">
+				#{major,jdbcType=VARCHAR},
+			</if>
+			<if test="belongclass != null">
+				#{belongclass,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="jobid != null">
+				#{jobid,jdbcType=VARCHAR},
+			</if>
+			<if test="belongid != null">
+				#{belongid,jdbcType=VARCHAR},
+			</if>
+			<if test="roleflag != null">
+				#{roleflag,jdbcType=INTEGER},
+			</if>
+			<if test="financeflag != null">
+				#{financeflag,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				#{delflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+</mapper>

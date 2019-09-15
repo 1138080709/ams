@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ams.user.dao.MemberApplicateInfoDao">
+	<resultMap id="BaseResultMap"
+		type="com.ams.user.entity.MemberApplicateInfo">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="digits" property="digits" jdbcType="VARCHAR" />
+		<result column="department" property="department"
+			jdbcType="VARCHAR" />
+		<result column="major" property="major" jdbcType="VARCHAR" />
+		<result column="belongClass" property="belongclass"
+			jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="applicateSection" property="applicatesection"
+			jdbcType="VARCHAR" />
+		<result column="applicateJob" property="applicatejob"
+			jdbcType="VARCHAR" />
+		<result column="applicateFlag" property="applicateflag"
+			jdbcType="INTEGER" />
+		<result column="applicateTime" property="applicatetime"
+			jdbcType="VARCHAR" />
+		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, name, digits, department, major, belongClass, grade, phone, email,
+		applicateSection,
+		applicateJob, applicateFlag, applicateTime, delFlag
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from member_applicate_info
+		where Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from member_applicate_info
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert"
+		parameterType="com.ams.user.entity.MemberApplicateInfo">
+		insert into member_applicate_info (Id, name, digits,
+		department, major, belongClass,
+		grade, phone, email,
+		applicateSection, applicateJob, applicateFlag,
+		applicateTime, delFlag)
+		values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+		#{digits,jdbcType=VARCHAR},
+		#{department,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, #{belongclass,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{applicatesection,jdbcType=VARCHAR}, #{applicatejob,jdbcType=VARCHAR}, #{applicateflag,jdbcType=INTEGER},
+		#{applicatetime,jdbcType=VARCHAR}, #{delflag,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.ams.user.entity.MemberApplicateInfo">
+		insert into member_applicate_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="digits != null">
+				digits,
+			</if>
+			<if test="department != null">
+				department,
+			</if>
+			<if test="major != null">
+				major,
+			</if>
+			<if test="belongclass != null">
+				belongClass,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="applicatesection != null">
+				applicateSection,
+			</if>
+			<if test="applicatejob != null">
+				applicateJob,
+			</if>
+			<if test="applicateflag != null">
+				applicateFlag,
+			</if>
+			<if test="applicatetime != null">
+				applicateTime,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="digits != null">
+				#{digits,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null">
+				#{department,jdbcType=VARCHAR},
+			</if>
+			<if test="major != null">
+				#{major,jdbcType=VARCHAR},
+			</if>
+			<if test="belongclass != null">
+				#{belongclass,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="applicatesection != null">
+				#{applicatesection,jdbcType=VARCHAR},
+			</if>
+			<if test="applicatejob != null">
+				#{applicatejob,jdbcType=VARCHAR},
+			</if>
+			<if test="applicateflag != null">
+				#{applicateflag,jdbcType=INTEGER},
+			</if>
+			<if test="applicatetime != null">
+				#{applicatetime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				#{delflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.ams.user.entity.MemberApplicateInfo">
+		update member_applicate_info
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="digits != null">
+				digits = #{digits,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null">
+				department = #{department,jdbcType=VARCHAR},
+			</if>
+			<if test="major != null">
+				major = #{major,jdbcType=VARCHAR},
+			</if>
+			<if test="belongclass != null">
+				belongClass = #{belongclass,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="applicatesection != null">
+				applicateSection = #{applicatesection,jdbcType=VARCHAR},
+			</if>
+			<if test="applicatejob != null">
+				applicateJob = #{applicatejob,jdbcType=VARCHAR},
+			</if>
+			<if test="applicateflag != null">
+				applicateFlag = #{applicateflag,jdbcType=INTEGER},
+			</if>
+			<if test="applicatetime != null">
+				applicateTime = #{applicatetime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				delFlag = #{delflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.ams.user.entity.MemberApplicateInfo">
+		update member_applicate_info
+		set name = #{name,jdbcType=VARCHAR},
+		digits = #{digits,jdbcType=VARCHAR},
+		department = #{department,jdbcType=VARCHAR},
+		major = #{major,jdbcType=VARCHAR},
+		belongClass = #{belongclass,jdbcType=VARCHAR},
+		grade = #{grade,jdbcType=VARCHAR},
+		phone = #{phone,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		applicateSection = #{applicatesection,jdbcType=VARCHAR},
+		applicateJob = #{applicatejob,jdbcType=VARCHAR},
+		applicateFlag = #{applicateflag,jdbcType=INTEGER},
+		applicateTime = #{applicatetime,jdbcType=VARCHAR},
+		delFlag = #{delflag,jdbcType=INTEGER}
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

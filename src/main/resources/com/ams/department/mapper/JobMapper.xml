@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ams.department.dao.JobDao">
+	<resultMap id="BaseResultMap"
+		type="com.ams.department.entity.Job">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="jobName" property="jobName" jdbcType="VARCHAR" />
+		<result column="roleFlag" property="roleFlag"
+			jdbcType="INTEGER" />
+		<result column="belongId" property="belongId"
+			jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime"
+			jdbcType="VARCHAR" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, jobName, roleFlag, belongId, createTime, delFlag
+	</sql>
+	<select id="getAllJobList"
+		resultType="com.ams.department.entity.Job">
+		select
+		<include refid="Base_Column_List"></include>
+		from job
+		Where delFlag=0
+		<if test="queryInfo != null and queryInfo != ''">
+			and jobName like concat(#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+	<select id="getAllJobCount" resultType="java.lang.Integer">
+		select count(*)
+		from job
+		where delFlag=0
+	</select>
+	<select id="getJobCountByDepartmentId"
+		resultType="java.lang.Integer">
+		select count(*)
+		from job
+		where delFlag=0
+		and belongId=#{selectDepartmentId,jdbcType=VARCHAR}
+	</select>
+	<select id="getJobById" parameterType="java.lang.String"
+		resultType="com.ams.department.entity.Job">
+		select
+		<include refid="Base_Column_List"></include>
+		from job
+		where delFlag=0
+		and Id=#{orderJobId,jdbcType=VARCHAR}
+	</select>
+	<insert id="insert"
+		parameterType="com.ams.department.entity.Job">
+		insert into job (Id, jobName, roleFlag,
+		belongId, createTime
+		)
+		values (#{id,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR},
+		#{roleFlag,jdbcType=INTEGER},
+		#{belongId,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}
+		)
+	</insert>
+	<update id="updateInfoById">
+		update job
+		<set>
+			<if test="newJobName != null and newJobName != ''">
+				jobName=#{newJobName},
+			</if>
+			<if test="newRoleFlag != null and newRoleFlag !=''">
+				roleFlag=#{newRoleFlag},
+			</if>
+			<if test="newBelongId !=null and newBelongId !=''">
+				belongId=#{newBelongId}
+			</if>
+		</set>
+		where Id=#{orderJobId}
+	</update>
+	<update id="updateDelFlagById">
+		update job
+		set delFlag=1
+		where Id=#{selectJobId}
+	</update>
+
+
+
+
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from job
+		where Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from job
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertSelective"
+		parameterType="com.ams.department.entity.Job">
+		insert into job
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="jobname != null">
+				jobName,
+			</if>
+			<if test="roleflag != null">
+				roleFlag,
+			</if>
+			<if test="belongid != null">
+				belongId,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="jobname != null">
+				#{jobname,jdbcType=VARCHAR},
+			</if>
+			<if test="roleflag != null">
+				#{roleflag,jdbcType=INTEGER},
+			</if>
+			<if test="belongid != null">
+				#{belongid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				#{delflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.ams.department.entity.Job">
+		update job
+		<set>
+			<if test="jobname != null">
+				jobName = #{jobname,jdbcType=VARCHAR},
+			</if>
+			<if test="roleflag != null">
+				roleFlag = #{roleflag,jdbcType=INTEGER},
+			</if>
+			<if test="belongid != null">
+				belongId = #{belongid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				delFlag = #{delflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.ams.department.entity.Job">
+		update job
+		set jobName = #{jobname,jdbcType=VARCHAR},
+		roleFlag = #{roleflag,jdbcType=INTEGER},
+		belongId = #{belongid,jdbcType=VARCHAR},
+		createTime = #{createtime,jdbcType=VARCHAR},
+		delFlag = #{delflag,jdbcType=INTEGER}
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

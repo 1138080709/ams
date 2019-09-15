@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ams.finance.dao.CashDao">
+	<resultMap id="BaseResultMap"
+		type="com.ams.finance.entity.Cash">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="VARCHAR" />
+		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, money, delFlag
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from cash
+		where Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from cash
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.ams.finance.entity.Cash">
+		insert into cash (Id, money, delFlag
+		)
+		values (#{id,jdbcType=VARCHAR}, #{money,jdbcType=VARCHAR},
+		#{delflag,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.ams.finance.entity.Cash">
+		insert into cash
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="money != null">
+				money,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null">
+				#{money,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				#{delflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.ams.finance.entity.Cash">
+		update cash
+		<set>
+			<if test="money != null">
+				money = #{money,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				delFlag = #{delflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.ams.finance.entity.Cash">
+		update cash
+		set money = #{money,jdbcType=VARCHAR},
+		delFlag = #{delflag,jdbcType=INTEGER}
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

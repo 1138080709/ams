@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ams.department.dao.DepartmentDao">
+	<resultMap id="BaseResultMap"
+		type="com.ams.department.entity.Department">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="departmentName" property="departmentName"
+			jdbcType="VARCHAR" />
+		<result column="ministerId" property="ministerId"
+			jdbcType="VARCHAR" />
+		<result column="description" property="description"
+			jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime"
+			jdbcType="VARCHAR" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, departmentName, ministerId, description, createTime,
+		delFlag
+	</sql>
+	<select id="getDepartmentById"
+		resultType="com.ams.department.entity.Department">
+		select
+		<include refid="Base_Column_List"></include>
+		from department
+		where delFlag=0
+		and Id=#{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getAlldepartmentList"
+		resultType="com.ams.department.entity.Department">
+		select
+		<include refid="Base_Column_List"></include>
+		from department
+		where delFlag=0
+		<if test="queryInfo != null and queryInfo != ''">
+			and departmentName like concat(#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+	<select id="getAlldepartmentCount"
+		resultType="java.lang.Integer">
+		select count(*)
+		from department
+	</select>
+	<insert id="insert"
+		parameterType="com.ams.department.entity.Department">
+		insert into department (Id, departmentName, ministerId,
+		description, createTime
+		)
+		values (#{id,jdbcType=VARCHAR},
+		#{departmentName,jdbcType=VARCHAR},
+		#{ministerId,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}
+		)
+	</insert>
+	<update id="updateInfoById">
+		update department
+		<set>
+			<if test="newDepartmentName != null and newDepartmentName !=''">
+				departmentName=#{newDepartmentName,jdbcType=VARCHAR},
+			</if>
+			<if test="newMinisterId != null and newMinisterId  !=''">
+				ministerId=#{newMinisterId,jdbcType=VARCHAR},
+			</if>
+			<if test="newDescription != null and newDescription  !=''">
+				description=#{newDescription,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where Id=#{departmentId,jdbcType=VARCHAR}
+		and delFlag=0
+	</update>
+	<update id="updateDelFlagById">
+		update department
+		set delFlag=1
+		where
+		Id=#{selectDepartmentId,jdbcType=VARCHAR}
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		department
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insertSelective"
+		parameterType="com.ams.department.entity.Department">
+		insert into department
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="departmentname != null">
+				departmentName,
+			</if>
+			<if test="ministerid != null">
+				ministerId,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="departmentname != null">
+				#{departmentname,jdbcType=VARCHAR},
+			</if>
+			<if test="ministerid != null">
+				#{ministerid,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				#{delflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.ams.department.entity.Department">
+		update department
+		<set>
+			<if test="departmentname != null">
+				departmentName = #{departmentname,jdbcType=VARCHAR},
+			</if>
+			<if test="ministerid != null">
+				ministerId = #{ministerid,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="delflag != null">
+				delFlag = #{delflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.ams.department.entity.Department">
+		update department
+		set departmentName =
+		#{departmentname,jdbcType=VARCHAR},
+		ministerId =
+		#{ministerid,jdbcType=VARCHAR},
+		description =
+		#{description,jdbcType=VARCHAR},
+		createTime =
+		#{createtime,jdbcType=VARCHAR},
+		delFlag = #{delflag,jdbcType=INTEGER}
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>
