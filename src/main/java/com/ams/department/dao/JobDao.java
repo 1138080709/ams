@@ -26,9 +26,11 @@ public interface JobDao {
 
 	Job getJobById(String orderJobId);
 
-	int updateInfoById(@Param("orderJobId")String orderJobId, @Param("newJobName")String newJobName, @Param("newRoleFlag")int newRoleFlag, @Param("newBelongId")String newBelongId);
+	int updateInfoById(@Param("orderJobId")String orderJobId, @Param("newJobName")String newJobName, @Param("newRoleFlag")Integer newRoleFlag, @Param("newBelongId")String newBelongId);
 
 	int updateDelFlagById(String selectJobId);
 
 	int getJobCountByDepartmentId(String selectDepartmentId);
+
+	Job getJobByName(String jobName);
 }

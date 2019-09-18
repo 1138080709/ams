@@ -59,4 +59,14 @@ public class DepartmentServiceImpl implements IDepartmentService{
 		return this.departmentDao.updateDelFlagById(selectDepartmentId);
 	}
 
+	@Override
+	public Department selectDepartmentByName(String departmentName) {
+		return this.departmentDao.selectDepartmentByName(departmentName);
+	}
+
+	@Override
+	public Department selectDepartmentById(String departmentId) {
+		return this.departmentDao.getDepartmentById(departmentId);
+	}
+
 }

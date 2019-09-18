@@ -1,7 +1,11 @@
 package com.ams.user.service;
 
 
+import java.io.InputStream;
 import java.util.List;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ams.department.dto.QuerySaveMemberInfoDTO;
 import com.ams.user.entity.User;
@@ -23,4 +27,8 @@ public interface IUserService {
 	public int updateMemberInfoById(User newInfoUser);
 
 	public int updateJobById(String memberId, String memberJobId, Integer roleFlag);
+
+	public void importExcelInfo(InputStream in, MultipartFile file);
+
+	public XSSFWorkbook exportExcelInfo();
 }

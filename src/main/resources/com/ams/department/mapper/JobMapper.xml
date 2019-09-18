@@ -47,6 +47,14 @@
 		where delFlag=0
 		and Id=#{orderJobId,jdbcType=VARCHAR}
 	</select>
+	<select id="getJobByName" parameterType="java.lang.String"
+		resultType="com.ams.department.entity.Job">
+		select
+		<include refid="Base_Column_List"></include>
+		from job
+		where delFlag=0
+		and jobName=#{jobName,jdbcType=VARCHAR}
+	</select>
 	<insert id="insert"
 		parameterType="com.ams.department.entity.Job">
 		insert into job (Id, jobName, roleFlag,

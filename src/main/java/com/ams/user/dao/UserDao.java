@@ -28,4 +28,8 @@ public interface UserDao {
     int updateById(User newInfoUser);
 
 	int updateJobById(@Param("memberId")String memberId, @Param("memberJobId")String memberJobId, @Param("roleFlag")Integer roleFlag);
+
+	void insertUserList(List<User> userList);
+
+	List<User> selectListInfo();
 }

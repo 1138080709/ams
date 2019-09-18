@@ -9,26 +9,69 @@
 		<result column="department" property="department"
 			jdbcType="VARCHAR" />
 		<result column="major" property="major" jdbcType="VARCHAR" />
-		<result column="belongClass" property="belongclass"
+		<result column="belongClass" property="belongClass"
 			jdbcType="VARCHAR" />
 		<result column="grade" property="grade" jdbcType="VARCHAR" />
 		<result column="phone" property="phone" jdbcType="VARCHAR" />
 		<result column="email" property="email" jdbcType="VARCHAR" />
-		<result column="applicateSection" property="applicatesection"
+		<result column="applicateSection" property="applicateSection"
 			jdbcType="VARCHAR" />
-		<result column="applicateJob" property="applicatejob"
+		<result column="applicateJob" property="applicateJob"
 			jdbcType="VARCHAR" />
-		<result column="applicateFlag" property="applicateflag"
+		<result column="applicateFlag" property="applicateFlag"
 			jdbcType="INTEGER" />
-		<result column="applicateTime" property="applicatetime"
+		<result column="applicateTime" property="applicateTime"
 			jdbcType="VARCHAR" />
-		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		Id, name, digits, department, major, belongClass, grade, phone, email,
 		applicateSection,
 		applicateJob, applicateFlag, applicateTime, delFlag
 	</sql>
+	<select id="getAllApplicateCount" resultType="java.lang.Integer">
+		select *
+		from member_applicate_info
+		where delFlag=0
+	</select>
+	<select id="getAllApplicateInfoList"
+		resultType="com.ams.user.entity.MemberApplicateInfo">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
+		<if test="queryInfo != null and queryInfo != ''">
+			and name like concat(#{queryInfo},"%")
+		</if>
+		limit #{offset},#{limit}
+	</select>
+	<update id="updateApplicateSuccessStatus" parameterType="java.util.List">
+		update member_applicate_info
+		<set>
+			applicateFlag=1
+		</set>
+		where delFlag=0
+		and id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateApplicateFailStatus" parameterType="java.util.List">
+		update member_applicate_info
+		<set>
+			applicateFlag=2
+		</set>
+		where delFlag=0
+		and id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	
+	
+	
+	
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select

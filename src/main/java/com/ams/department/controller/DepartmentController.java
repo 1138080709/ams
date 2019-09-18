@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ams.department.dto.QuerySaveDepartmentInfoDTO;
 import com.ams.department.dto.QuerySaveJobInfoDTO;
@@ -26,6 +27,7 @@ import com.ams.user.entity.User;
 import com.ams.user.service.IUserService;
 import com.ams.user.service.impl.UserServiceImpl;
 import com.ams.utils.IdGen;
+import com.ams.utils.Result;
 
 /**
  * 
@@ -45,25 +47,20 @@ public class DepartmentController {
 	 * 实现部门列表分页查询 返回DTO类(包含部门与部长的基本信息)
 	 * 测试问题在于，如何将offset和limit的数据从前端传进后端
 	 * 
+	 * @param queryInfo
+	 * @param offset 不能为空
+	 * @param limit  不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("getDepartmentList")
-	public String getDepartmentList(HttpServletRequest request, Model model) {
+	@ResponseBody
+	public Result getDepartmentList(String queryInfo,int offset,int limit,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String queryInfo = request.getParameter("queryInfo");//查询信息
-		int offset = Integer.parseInt(request.getParameter("offset"));//初始的
-		int limit = Integer.parseInt(request.getParameter("limit"));//限制每页有多个项目
-		Map<Object, Object> resultMap = new HashMap<Object, Object>();
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<QuerySaveDepartmentInfoDTO> departments = null;
 		departments = departmentService.getAlldepartmentList(queryInfo, offset, limit); 
 		int total = 0;
@@ -77,538 +74,253 @@ public class DepartmentController {
 		*/
 		resultMap.put("departments", departments);
 		resultMap.put("total", total);
-		model.addAttribute("departmentUserList", resultMap);
-		if(currentUser.getRoleFlag()==1)
-			return "FirstManager";
-		else if(currentUser.getRoleFlag()==2)
-			return "SecondManager";
-		else if(currentUser.getRoleFlag()==3)
-			return "ThirdManager";
-		else if(currentUser.getRoleFlag()==4)
-			return "FourthManager";
-		else 
-			return "FifthManager";
+		return Result.makeSuccessResult(resultMap);
 	}
 	/**
 	 * 更改部门信息接口
 	 * 
+	 * @param departmentId
+	 * @param newDepartmentName
+	 * @param newMinisterDigits
+	 * @param newDescribe
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("updateDepartmentInfo")
-	public String UpdateDepartmentInfo(HttpServletRequest request, Model model) {
+	@ResponseBody
+	public Result UpdateDepartmentInfo(String departmentId,String newDepartmentName,String newMinisterDigits,String newDescribe,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		String departmentId=request.getParameter("departmentId");
-		String newDepartmentName=request.getParameter("newDepartmentName");
-		String newMinisterDigits=request.getParameter("newMinisterDigits");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		User ministerUser=userService.getUserByDigits(newMinisterDigits);
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		if(ministerUser==null) {
-			model.addAttribute("success", null);
-			model.addAttribute("error","找不到该成员");
-			if(currentUser.getRoleFlag()==1) 
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3) 
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4) 
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(ministerUser==null)
+			return Result.makeFailResult("找不到该用户");
 		String newMinisterId=ministerUser.getId();
-		String newDescribe=request.getParameter("newDescribe");
 		int result=departmentService.updateInfoById(departmentId,newDepartmentName,newMinisterId,newDescribe);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "信息修改失败");
-			if(currentUser.getRoleFlag()==1) 
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3) 
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4) 
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "信息修改成功");
-			if(currentUser.getRoleFlag()==1) 
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3) 
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4) 
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result==0) 
+			return Result.makeFailResult("信息修改失败");
+		else
+			return Result.makeSuccessResult("信息修改成功");
 	}
 	/**
-	 * 添加新部门接口
+	 * 创建部门接口
 	 * 
+	 * @param departmentName 不能为空
+	 * @param ministerId
+	 * @param describe
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("addDepartment")
-	public String addDepartment(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result addDepartment(String departmentName,String ministerDigits,String describe,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		String departmentId=IdGen.uuid();
-		String departmentName=request.getParameter("newDepartmentName");
-		if(departmentName==null||departmentName=="") {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "部门名不能为空");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		String ministerId=request.getParameter("newMinisterId");
-		String describe=request.getParameter("newDescribe");
 		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String createTime=df.format(new Date());
+		User ministerUser=userService.getUserByDigits(ministerDigits);
+		String ministerId=null;
+		if(ministerUser!=null)
+			ministerId=ministerUser.getId();
+		if(departmentName==null||departmentName=="") 
+			return Result.makeFailResult("部门名不能为空");
+		Department department=departmentService.selectDepartmentByName(departmentName);
+		if(department!=null)
+			return Result.makeFailResult("部门名已存在");
 		Department newDepartment=new Department(departmentId,departmentName,ministerId,describe,createTime);
 		int result=departmentService.insertNewDepartment(newDepartment);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "部门创建出错");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "部门创建成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		
+		if(result==0) 
+			return Result.makeFailResult("部门创建失败");
+		else 	
+			return Result.makeSuccessResult("部门创建成功");	
 	}
 	
 	/**
 	 * 删除部门接口
 	 * 注意部门成员的级联处理
 	 * 
+	 * @param selectDepartmentId 不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("delDepartment")
-	public String delDepartment(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result delDepartment(String selectDepartmentId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String selectDepartmentId=request.getParameter("selectDepartmentId");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		//System.out.println(selectDepartmentId);
 		int result=jobService.getJobCountByDepartmentId(selectDepartmentId);
-		if(result!=0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "该部门还有剩余职位,删除部门失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result!=0)
+			return Result.makeFailResult("该部门还有剩余职位,删除部门失败");
 		result=departmentService.updateDelFlagById(selectDepartmentId);
 		//System.out.println(result);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "部门删除失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "部门删除成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result==0) 
+			return Result.makeFailResult("部门删除失败");
+		else 
+			return Result.makeFailResult("部门删除成功");
 	}
 	
 	/**
 	 * 实现职位列表分页查询 返回DTO类(包含职位与所属部门的基本信息)
 	 * 
+	 * @param queryInfo
+	 * @param offset 不能为空
+	 * @param limit 不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("getJobList")
-	public String getJobList(HttpServletRequest request,Model model){
+	@ResponseBody
+	public Result getJobList(String queryInfo,int offset,int limit,HttpServletRequest request){
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String queryInfo = request.getParameter("queryInfo");
-		int offset = Integer.parseInt(request.getParameter("offset"));
-		int limit = Integer.parseInt(request.getParameter("limit"));
-		Map<Object, Object> resultMap = new HashMap<Object, Object>();
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<QuerySaveJobInfoDTO> jobs = null;
 		jobs = jobService.getAllJobList(queryInfo, offset, limit); 
 		int total = 0;
 		total = jobService.getAllJobCount();
 		resultMap.put("jobs", jobs);
 		resultMap.put("total", total);
-		model.addAttribute("jobsList", resultMap);
-		if(currentUser.getRoleFlag()==1)
-			return "FirstManager";
-		else if(currentUser.getRoleFlag()==2)
-			return "SecondManager";
-		else if(currentUser.getRoleFlag()==3)
-			return "ThirdManager";
-		else if(currentUser.getRoleFlag()==4)
-			return "FourthManager";
-		else 
-			return "FifthManager";
+		return Result.makeSuccessResult(resultMap);
 	}
 	
 	/**
-	 * 创建职业接口
+	 * 创建职位接口
 	 * 
+	 * @param jobName 不能为空
+	 * @param roleFlag 不能为空
+	 * @param departmentId 不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("addJob")
-	public String addJob(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result addJob(String jobName,int roleFlag,String belongId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		String jobId=IdGen.uuid();
-		String jobName=request.getParameter("jobName");//不能为空
-		if(jobName==null||jobName=="") {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "职业名不能为空");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		int roleFlag=Integer.parseInt(request.getParameter("roleFlag"));//不能为空
-		if(roleFlag==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "职业权限不能为空");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		String belongId=request.getParameter("departmentId");
+		if(jobName==null||jobName=="") 
+			return Result.makeFailResult("职位名不能为空");
+		Job job=jobService.getJobByName(jobName);
+		if(job!=null)
+			return Result.makeFailResult("职位名已存在");
+		if(belongId==null)
+			return Result.makeFailResult("部门Id不能为空");
 		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String createTime=df.format(new Date());
-		Job job=new Job(jobId,jobName,roleFlag,belongId,createTime);
-		int Result=jobService.insertNewJob(job);
-		if(Result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "职业创建失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "职业创建成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		Job newJob=new Job(jobId,jobName,roleFlag,belongId,createTime);
+		int result=jobService.insertNewJob(newJob);
+		if(result==0) 
+			return Result.makeFailResult("职位创建失败");
+		else 
+			return Result.makeSuccessResult("职位创建成功");
 	}
 	/**
 	 * 修改职业信息接口
 	 * 
+	 * @param orderJobId
+	 * @param newJobName
+	 * @param newRoleFlag
+	 * @param newBelongId
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("updateJob")
-	public String updateJob(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result updateJob(String orderJobId,String newJobName,Integer newRoleFlag,String newBelongId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String orderJobId=request.getParameter("jobId");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Job orderJob=jobService.getJobById(orderJobId);
-		if(orderJobId==null||orderJob==null){
-			model.addAttribute("success", null);
-			model.addAttribute("error", "找不到当前的职业信息");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		String newJobName=request.getParameter("newJobName");
-		int newRoleFlag=Integer.parseInt(request.getParameter("newRoleFlag"));
-		String newBelongId=request.getParameter("newDepartmentId");
-		int result=jobService.updateInfoById(orderJobId,newJobName,newRoleFlag,newBelongId);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "职业信息修改失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "职业信息修改成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(orderJobId==null||orderJob==null)
+			return Result.makeFailResult("找不到当前的职业信息");
+		int result=0;
+		if(newRoleFlag==null) 
+			result=jobService.updateInfoById(orderJobId, newJobName, null, newBelongId);
+		result=jobService.updateInfoById(orderJobId,newJobName,newRoleFlag,newBelongId);
+		if(result==0) 
+			return Result.makeFailResult("职业信息修改失败");
+		else 
+			return Result.makeSuccessResult("职业信息修改成功");
+			
 	}
 	
 	/**
-	 * 删除职业接口
+	 * 删除职位接口
 	 * 
+	 * @param selectJobId 不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("delJob")
-	public String delJob(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result delJob(String selectJobId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String selectJobId=request.getParameter("selectJobId");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		int result=userService.getUserCountByJobId(selectJobId);
 		System.out.println(result);
-		if(result!=0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "该职位还有剩余成员,删除职业失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result!=0)
+			return Result.makeFailResult("该职位还有剩余成员,删除职业失败");
 		result=jobService.updateDelFlagById(selectJobId);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "职业删除失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "职业删除成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result==0)
+			return Result.makeFailResult("职位删除失败");
+		else 
+			return Result.makeSuccessResult("职位删除成功");
 	}
 	
 	/**
 	 * 获取部门成员列表，分页查询
-	 * 
+	 *
+	 * @param departmentId 不能为空
+	 * @param queryInfo
+	 * @param offset	      不能为空
+	 * @param limit		      不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("getDepartmentMemberList")
-	public String getDepartmentMemberList(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result getDepartmentMemberList(String departmentId,String queryInfo,int offset,int limit,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String departmentId=request.getParameter("currentDepartment");
-		String queryInfo = request.getParameter("queryInfo");//查询信息
-		int offset = Integer.parseInt(request.getParameter("offset"));//初始的
-		int limit = Integer.parseInt(request.getParameter("limit"));//限制每页有多个项目
-		Map<Object,Object> resultMap=new HashMap<Object,Object>();
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
 		List<QuerySaveMemberInfoDTO> departmentMembers=null;
 		departmentMembers=userService.getUserByDepartmentId(departmentId,queryInfo,offset,limit);
 		int total=0;
 		total=userService.getMemberCountByDepartmentId(departmentId);
 		resultMap.put("departmentMembers", departmentMembers);
 		resultMap.put("total", total);
-		model.addAttribute("departmentMemberList", resultMap);
-		if(currentUser.getRoleFlag()==1)
-			return "FirstManager";
-		else if(currentUser.getRoleFlag()==2)
-			return "SecondManager";
-		else if(currentUser.getRoleFlag()==3)
-			return "ThirdManager";
-		else if(currentUser.getRoleFlag()==4)
-			return "FourthManager";
-		else 
-			return "FifthManager";
+		return Result.makeSuccessResult(resultMap);
 	}
 	
 	/**
 	 * 成员基本信息的修改接口
 	 * 
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("updateMemberInfo")
-	public String updateMemberInfo(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result updateMemberInfo(HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		String memberId=request.getParameter("memberId");
 		String memberName=request.getParameter("memberName");
 		String memberDigits=request.getParameter("memberDigits");
@@ -619,187 +331,73 @@ public class DepartmentController {
 		String memberPhone=request.getParameter("memberPhone");
 		String memberEmail=request.getParameter("memberEmail");
 		User orderUser=userService.getUserById(memberId);
-		if(orderUser==null) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "找不到当前修改的成员");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(orderUser==null)
+			return Result.makeFailResult("找不到当前修改的成员");
+		if(memberName==null&&memberDigits==null&&memberDepartment==null&&
+				memberMajor==null&&memberClass==null&&memberGrade==null&&memberPhone==null&&memberEmail==null)
+			return Result.makeFailResult("成员信息修改失败");
 		User newInfoUser=new User(memberId,memberName,memberDigits,memberDepartment,
 				memberMajor,memberClass,memberGrade,memberPhone,memberEmail);
 		int result=userService.updateMemberInfoById(newInfoUser);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "成员信息修改失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "成员信息修改成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result==0)
+			return Result.makeFailResult("成员信息修改失败");
+		else 
+			return Result.makeSuccessResult("成员信息修改成功");
 	}
 	
 	/**
 	 * 成员职位信息的更改接口
 	 * 职位的变迁相应的权限级联
 	 * 
+	 * @param memberId 不能为空
+	 * @param memberJobId 不能为空
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("updatePostInfo")
-	public String updatePostInfo(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result updatePostInfo(String memberId,String memberJobId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String memberId=request.getParameter("memberId");
-		String memberJobId=request.getParameter("memberJobId");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		User orderUser=userService.getUserById(memberId);
-		if(orderUser==null) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "找不到当前修改的成员");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(orderUser==null) 
+			return Result.makeFailResult("找不到当前修改的成员");
 		Job orderJob=jobService.getJobById(memberJobId);
 		int result=userService.updateJobById(memberId,memberJobId,orderJob.getRoleFlag());
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "信息修改失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "信息修改成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(result==0)
+			return Result.makeFailResult("信息修改失败");
+		else 
+			return Result.makeSuccessResult("信息修改成功");
 	}
 	
 	/**
-	 * 用户权限的更改(未测试)
+	 * 用户权限的更改
 	 * 
+	 * @param memberId
+	 * @param roleFlag
 	 * @param request
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping("updateRoleFlag")
-	public String updateRoleFlag(HttpServletRequest request,Model model) {
+	@ResponseBody
+	public Result updateRoleFlag(String memberId,Integer roleFlag,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
-		if(currentUser==null) {
-			if(currentUser==null) {
-				model.addAttribute("success", null);
-				model.addAttribute("error", "用户登录已失效,请重新登录");
-				return "login";
-			}
-		}
-		String memberId=request.getParameter("memberId");
-		int roleFlag=Integer.parseInt(request.getParameter("roleFlag"));
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		User orderUser=userService.getUserById(memberId);
-		if(orderUser==null) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "找不到当前修改的成员");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
-		int result=userService.updateJobById(memberId,null,roleFlag);
-		if(result==0) {
-			model.addAttribute("success", null);
-			model.addAttribute("error", "信息修改失败");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}else {
-			model.addAttribute("error", null);
-			model.addAttribute("success", "信息修改成功");
-			if(currentUser.getRoleFlag()==1)
-				return "FirstManager";
-			else if(currentUser.getRoleFlag()==2)
-				return "SecondManager";
-			else if(currentUser.getRoleFlag()==3)
-				return "ThirdManager";
-			else if(currentUser.getRoleFlag()==4)
-				return "FourthManager";
-			else 
-				return "FifthManager";
-		}
+		if(orderUser==null) 
+			return Result.makeFailResult("找不到当前修改的成员");
+		int result=0;
+		if(roleFlag==null)
+			return Result.makeFailResult("信息修改失败");
+		result=userService.updateJobById(memberId,null,roleFlag);
+		if(result==0) 
+			return Result.makeFailResult("信息修改失败");
+		else 
+			return Result.makeSuccessResult("信息修改成功");
 	}
 	
-	public static void main(String[] args) {
-		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String createTime=df.format(new Date());
-		System.out.println(createTime);
-	}
 }

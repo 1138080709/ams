@@ -15,10 +15,12 @@ public interface IJobService {
 
 	Job getJobById(String orderJobId);
 
-	int updateInfoById(String orderJobId, String newJobName, int newRoleFlag, String newBelongId);
+	int updateInfoById(String orderJobId, String newJobName, Integer newRoleFlag, String newBelongId);
 
 	int updateDelFlagById(String selectJobId);
 
 	int getJobCountByDepartmentId(String selectDepartmentId);
+
+	Job getJobByName(String jobName);
 	
 }

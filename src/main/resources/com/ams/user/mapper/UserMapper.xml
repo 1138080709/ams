@@ -129,6 +129,111 @@
 		where Id=#{memberId,jdbcType=VARCHAR}
 		and delFlag=0
 	</update>
+	<insert id="insertUserList" parameterType="java.util.List">
+		insert into user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="digits != null">
+				digits,
+			</if>
+			<if test="department != null">
+				department,
+			</if>
+			<if test="major != null">
+				major,
+			</if>
+			<if test="belongclass != null">
+				belongClass,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="jobid != null">
+				jobId,
+			</if>
+			<if test="belongid != null">
+				belongId,
+			</if>
+			<if test="roleflag != null">
+				roleFlag,
+			</if>
+			<if test="financeflag != null">
+				financeFlag,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="delflag != null">
+				delFlag,
+			</if>
+		</trim>
+		<foreach collection="list" item="item" index="index" separator=",">
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				<if test="id != null">
+					#{item.id,jdbcType=VARCHAR},
+				</if>
+				<if test="name != null">
+					#{item.name,jdbcType=VARCHAR},
+				</if>
+				<if test="digits != null">
+					#{item.digits,jdbcType=VARCHAR},
+				</if>
+				<if test="department != null">
+					#{item.department,jdbcType=VARCHAR},
+				</if>
+				<if test="major != null">
+					#{item.major,jdbcType=VARCHAR},
+				</if>
+				<if test="belongclass != null">
+					#{item.belongclass,jdbcType=VARCHAR},
+				</if>
+				<if test="grade != null">
+					#{item.grade,jdbcType=VARCHAR},
+				</if>
+				<if test="password != null">
+					#{item.password,jdbcType=VARCHAR},
+				</if>
+				<if test="phone != null">
+					#{item.phone,jdbcType=VARCHAR},
+				</if>
+				<if test="email != null">
+					#{item.email,jdbcType=VARCHAR},
+				</if>
+				<if test="jobid != null">
+					#{item.jobid,jdbcType=VARCHAR},
+				</if>
+				<if test="belongid != null">
+					#{item.belongid,jdbcType=VARCHAR},
+				</if>
+				<if test="roleflag != null">
+					#{item.roleflag,jdbcType=INTEGER},
+				</if>
+				<if test="financeflag != null">
+					#{item.financeflag,jdbcType=INTEGER},
+				</if>
+				<if test="createtime != null">
+					#{item.createtime,jdbcType=VARCHAR},
+				</if>
+				<if test="delflag != null">
+					#{item.delflag,jdbcType=INTEGER},
+				</if>
+			</trim>
+		</foreach>
+	</insert>
 
 
 

@@ -26,6 +26,14 @@
 		where delFlag=0
 		and Id=#{id,jdbcType=VARCHAR}
 	</select>
+	<select id="selectDepartmentByName" resultType="com.ams.department.entity.Department">
+		select
+		<include refid="Base_Column_List"></include>
+		from department
+		where delFlag=0
+		and departmentName=#{departmentName,jdbcType=VARCHAR}
+		
+	</select>
 	<select id="getAlldepartmentList"
 		resultType="com.ams.department.entity.Department">
 		select

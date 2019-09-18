@@ -11,6 +11,7 @@
 		学号：<input type="text" name="digits"> <input type="submit"
 			value="重置密码">
 	</form>
+	<a href="http://localhost:8080/ams/user/resetpassword?digits=201710098002">重置</a>
 	<br />
 	<% 	
   			String result1=(String)request.getAttribute("error");

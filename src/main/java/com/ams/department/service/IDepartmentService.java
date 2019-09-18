@@ -21,4 +21,8 @@ public interface IDepartmentService {
 	public Department getDepatmentById(String orderDepartmentId);
 
 	public int updateDelFlagById(String selectDepartmentId);
+
+	public Department selectDepartmentByName(String departmentName);
+
+	public Department selectDepartmentById(String departmentId);
 }

@@ -52,7 +52,7 @@ public class JobServiceImpl implements IJobService{
 		return this.jobDao.getJobById(orderJobId);
 	}
 
-	public int updateInfoById(String orderJobId, String newJobName, int newRoleFlag, String newBelongId) {
+	public int updateInfoById(String orderJobId, String newJobName, Integer newRoleFlag, String newBelongId) {
 		return this.jobDao.updateInfoById(orderJobId,newJobName,newRoleFlag,newBelongId);
 	}
 
@@ -62,6 +62,11 @@ public class JobServiceImpl implements IJobService{
 
 	public int getJobCountByDepartmentId(String selectDepartmentId) {
 		return this.jobDao.getJobCountByDepartmentId(selectDepartmentId);
+	}
+
+	@Override
+	public Job getJobByName(String jobName) {
+		return this.jobDao.getJobByName(jobName);
 	}
 	
 }
