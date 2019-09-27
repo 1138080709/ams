@@ -32,4 +32,15 @@ public interface UserDao {
 	void insertUserList(List<User> userList);
 
 	List<User> selectListInfo();
+
+	int addSingleUser(User user);
+
+	int updateDelFlagByDigits(String digits, int delFlag);
+
+	int updateUserInfoByDigits(String digits, String name, String department, String major, String belongClass,
+			String grade, String phone, String email);
+
+	int getUsersCount();
+
+	List<User> getUsersByPage(int startPos, int pageSize);
 }

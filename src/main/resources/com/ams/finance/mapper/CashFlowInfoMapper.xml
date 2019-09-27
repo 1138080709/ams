@@ -4,138 +4,211 @@
 	<resultMap id="BaseResultMap"
 		type="com.ams.finance.entity.CashFlowInfo">
 		<id column="Id" property="id" jdbcType="VARCHAR" />
-		<result column="infoType" property="infotype"
+		<result column="infoType" property="infoType"
 			jdbcType="INTEGER" />
 		<result column="money" property="money" jdbcType="INTEGER" />
 		<result column="description" property="description"
 			jdbcType="VARCHAR" />
-		<result column="proposerId" property="proposerid"
+		<result column="proposerId" property="proposerId"
 			jdbcType="VARCHAR" />
-		<result column="applicateTime" property="applicatetime"
+		<result column="applicateTime" property="applicateTime"
 			jdbcType="VARCHAR" />
-		<result column="auditorId" property="auditorid"
+		<result column="auditorId" property="auditorId"
 			jdbcType="VARCHAR" />
-		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+		<result column="auditFlag" property="auditFlag"
+			jdbcType="INTEGER"/>
+		<result column="executeFlag" property="executeFlag" jdbcType="INTEGER" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		Id, infoType, money, description, proposerId, applicateTime, auditorId,
+		Id, infoType, money, description, proposerId, applicateTime, auditorId,auditFlag,executeFlag,
 		delFlag
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+	<select id="getInfoById" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
 		<include refid="Base_Column_List" />
 		from cash_flow_info
 		where Id = #{id,jdbcType=VARCHAR}
+		and delFlag=0
+		and auditFlag=1
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from cash_flow_info
-		where Id = #{id,jdbcType=VARCHAR}
-	</delete>
-	<insert id="insert"
-		parameterType="com.ams.finance.entity.CashFlowInfo">
-		insert into cash_flow_info (Id, infoType, money,
-		description, proposerId, applicateTime,
-		auditorId, delFlag)
-		values (#{id,jdbcType=VARCHAR}, #{infotype,jdbcType=INTEGER},
-		#{money,jdbcType=INTEGER},
-		#{description,jdbcType=VARCHAR}, #{proposerid,jdbcType=VARCHAR}, #{applicatetime,jdbcType=VARCHAR},
-		#{auditorid,jdbcType=VARCHAR}, #{delflag,jdbcType=INTEGER})
-	</insert>
+	<select id="getCashFlowInfoCount" resultType="java.lang.Integer">
+		select count(*)
+		from cash_flow_info
+		where delFlag=0
+		and auditFlag=0
+	</select>
+	<select id="getExecuteCount" resultType="java.lang.Integer">
+		select count(*)
+		from cash_flow_info
+		where delFlag=0
+		and auditFlag!=0
+	</select>
+	<select id="getCashFlowInfoListCount" resultType="java.lang.Integer">
+		select count(*)
+		from cash_flow_info
+		where delFlag=0
+		and executeFlag=1
+	</select>
+	<select id="getpersonalAuditHistoryCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*)
+		from cash_flow_info
+		where delFlag=0
+		and proposerId=#{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getAuditList" resultType="com.ams.finance.entity.CashFlowInfo">
+		select
+		<include refid="Base_Column_List"></include>
+		from cash_flow_info
+		where delFlag=0
+		<if test="queryInfo != null and queryInfo != ''">
+			and description like concat("%",#{queryInfo},"%")
+			or money like concat("%",#{queryInfo},"%")
+			or applicateTime like concat("%",#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+	<select id="getExecuteList" resultType="com.ams.finance.entity.CashFlowInfo">
+		select
+		<include refid="Base_Column_List"></include>
+		from cash_flow_info
+		where delFlag=0
+		and auditFlag!=0
+		<if test="queryInfo != null and queryInfo != ''">
+			and description like concat("%",#{queryInfo},"%")
+			or money like concat("%",#{queryInfo},"%")
+			or applicateTime like concat("%",#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+	<select id="getCashFlowInfoList" resultType="com.ams.finance.entity.CashFlowInfo">
+		select
+		<include refid="Base_Column_List"></include>
+		from cash_flow_info
+		where delFlag=0
+		and executeFlag=1
+		<if test="queryInfo != null and queryInfo != ''">
+			and description like concat("%",#{queryInfo},"%")
+			or money like concat("%",#{queryInfo},"%")
+			or applicateTime like concat("%",#{queryInfo},"%")
+		</if>
+		order by applicateTime 
+		LIMIT #{offset},#{limit}
+	</select>
+	<select id="getpersonalAuditHistory" resultType="com.ams.finance.entity.CashFlowInfo">
+		select
+		<include refid="Base_Column_List"></include>
+		from cash_flow_info
+		where delFlag=0
+		and proposerId=#{id,jdbcType=VARCHAR}
+		<if test="queryInfo != null and queryInfo != ''">
+			and description like concat("%",#{queryInfo},"%")
+			or money like concat("%",#{queryInfo},"%")
+			or applicateTime like concat("%",#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+	<update id="updateApplicateRejectStatus">
+		update cash_flow_info
+		<set>
+			auditFlag=2,
+			<if test="auditorId != null and auditorId != ''">
+			auditorId=#{auditorId}
+			</if>
+		</set>
+		where delFlag=0
+		and id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateApplicateCancelStatus">
+		update cash_flow_info
+		<set>
+			auditFlag=0,
+			<if test="auditorId != null and auditorId != ''">
+			auditorId=#{auditorId}
+			</if>
+		</set>
+		where delFlag=0
+		and id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateApplicateAuthorizestatus">
+		update cash_flow_info
+		<set>
+			auditFlag=1,
+			<if test="auditorId != null and auditorId != ''">
+			auditorId=#{auditorId}
+			</if>
+		</set>
+		where delFlag=0
+		and id in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateExecuteFlag" parameterType="java.lang.String">
+		update cash_flow_info
+		<set>
+			executeFlag=1
+		</set>
+		where delFlag=0
+		and Id=#{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateCancelExecuteFlag" parameterType="java.lang.String">
+		update cash_flow_info
+		<set>
+			executeFlag=0
+		</set>
+		where delFlag=0
+		and Id=#{id,jdbcType=VARCHAR}
+	</update>
 	<insert id="insertSelective"
 		parameterType="com.ams.finance.entity.CashFlowInfo">
 		insert into cash_flow_info
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
+			<if test="id != null and id != ''">
 				Id,
 			</if>
-			<if test="infotype != null">
+			<if test="infoType != null">
 				infoType,
 			</if>
-			<if test="money != null">
+			<if test="money != null and money != ''">
 				money,
 			</if>
-			<if test="description != null">
+			<if test="description != null and description != ''">
 				description,
 			</if>
-			<if test="proposerid != null">
+			<if test="proposerId != null and proposerId != ''">
 				proposerId,
 			</if>
-			<if test="applicatetime != null">
+			<if test="applicateTime != null and applicateTime != ''">
 				applicateTime,
-			</if>
-			<if test="auditorid != null">
-				auditorId,
-			</if>
-			<if test="delflag != null">
-				delFlag,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
+			<if test="id != null and id != ''">
 				#{id,jdbcType=VARCHAR},
 			</if>
-			<if test="infotype != null">
-				#{infotype,jdbcType=INTEGER},
+			<if test="infoType != null">
+				#{infoType,jdbcType=INTEGER},
 			</if>
-			<if test="money != null">
+			<if test="money != null and money != ''">
 				#{money,jdbcType=INTEGER},
 			</if>
-			<if test="description != null">
+			<if test="description != null and description != ''">
 				#{description,jdbcType=VARCHAR},
 			</if>
-			<if test="proposerid != null">
-				#{proposerid,jdbcType=VARCHAR},
+			<if test="proposerId != null and proposerId != ''">
+				#{proposerId,jdbcType=VARCHAR},
 			</if>
-			<if test="applicatetime != null">
-				#{applicatetime,jdbcType=VARCHAR},
-			</if>
-			<if test="auditorid != null">
-				#{auditorid,jdbcType=VARCHAR},
-			</if>
-			<if test="delflag != null">
-				#{delflag,jdbcType=INTEGER},
+			<if test="applicateTime != null and applicateTime != ''">
+				#{applicateTime,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective"
-		parameterType="com.ams.finance.entity.CashFlowInfo">
-		update cash_flow_info
-		<set>
-			<if test="infotype != null">
-				infoType = #{infotype,jdbcType=INTEGER},
-			</if>
-			<if test="money != null">
-				money = #{money,jdbcType=INTEGER},
-			</if>
-			<if test="description != null">
-				description = #{description,jdbcType=VARCHAR},
-			</if>
-			<if test="proposerid != null">
-				proposerId = #{proposerid,jdbcType=VARCHAR},
-			</if>
-			<if test="applicatetime != null">
-				applicateTime = #{applicatetime,jdbcType=VARCHAR},
-			</if>
-			<if test="auditorid != null">
-				auditorId = #{auditorid,jdbcType=VARCHAR},
-			</if>
-			<if test="delflag != null">
-				delFlag = #{delflag,jdbcType=INTEGER},
-			</if>
-		</set>
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
-	<update id="updateByPrimaryKey"
-		parameterType="com.ams.finance.entity.CashFlowInfo">
-		update cash_flow_info
-		set infoType = #{infotype,jdbcType=INTEGER},
-		money = #{money,jdbcType=INTEGER},
-		description = #{description,jdbcType=VARCHAR},
-		proposerId = #{proposerid,jdbcType=VARCHAR},
-		applicateTime = #{applicatetime,jdbcType=VARCHAR},
-		auditorId = #{auditorid,jdbcType=VARCHAR},
-		delFlag = #{delflag,jdbcType=INTEGER}
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
 </mapper>

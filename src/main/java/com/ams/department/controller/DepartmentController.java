@@ -79,64 +79,61 @@ public class DepartmentController {
 	/**
 	 * 更改部门信息接口
 	 * 
-	 * @param departmentId
-	 * @param newDepartmentName
-	 * @param newMinisterDigits
-	 * @param newDescribe
+	 * @param department
+	 * @param ministerDigits
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("updateDepartmentInfo")
 	@ResponseBody
-	public Result UpdateDepartmentInfo(String departmentId,String newDepartmentName,String newMinisterDigits,String newDescribe,HttpServletRequest request) {
+	public Result UpdateDepartmentInfo(Department department,String ministerDigits,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
-		User ministerUser=userService.getUserByDigits(newMinisterDigits);
-		if(ministerUser==null)
-			return Result.makeFailResult("找不到该用户");
-		String newMinisterId=ministerUser.getId();
-		int result=departmentService.updateInfoById(departmentId,newDepartmentName,newMinisterId,newDescribe);
-		if(result==0) 
+		User ministerUser=null;
+		if(ministerDigits!=null) {
+			ministerUser=userService.getUserByDigits(ministerDigits);
+			if(ministerUser==null)
+				return Result.makeFailResult("找不到该成员信息");
+		}
+		int result=departmentService.updateInfoById(department,ministerUser);
+		if(result==0)
 			return Result.makeFailResult("信息修改失败");
 		else
 			return Result.makeSuccessResult("信息修改成功");
+		
 	}
+	
 	/**
 	 * 创建部门接口
 	 * 
-	 * @param departmentName 不能为空
-	 * @param ministerId
-	 * @param describe
+	 * @param department
+	 * @param ministerDigits
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("addDepartment")
 	@ResponseBody
-	public Result addDepartment(String departmentName,String ministerDigits,String describe,HttpServletRequest request) {
+	public Result addDepartment(Department department,String ministerDigits,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
+		User ministerUser=null;
+		Department orderDepartment=departmentService.selectDepartmentByName(department.getDepartmentName());
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
-		String departmentId=IdGen.uuid();
-		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String createTime=df.format(new Date());
-		User ministerUser=userService.getUserByDigits(ministerDigits);
-		String ministerId=null;
-		if(ministerUser!=null)
-			ministerId=ministerUser.getId();
-		if(departmentName==null||departmentName=="") 
-			return Result.makeFailResult("部门名不能为空");
-		Department department=departmentService.selectDepartmentByName(departmentName);
-		if(department!=null)
+		if(orderDepartment!=null)
 			return Result.makeFailResult("部门名已存在");
-		Department newDepartment=new Department(departmentId,departmentName,ministerId,describe,createTime);
-		int result=departmentService.insertNewDepartment(newDepartment);
-		if(result==0) 
+		if(ministerDigits!=null) {
+			ministerUser=userService.getUserByDigits(ministerDigits);
+			if(ministerUser==null)
+				return Result.makeFailResult("找不到该成员信息，无法进行设置");
+		}
+		int result=departmentService.insertNewDepartment(department,ministerUser);
+		if(result==0)
 			return Result.makeFailResult("部门创建失败");
-		else 	
-			return Result.makeSuccessResult("部门创建成功");	
+		else
+			return Result.makeSuccessResult("部门创建成功");
 	}
 	
 	/**
@@ -195,65 +192,49 @@ public class DepartmentController {
 	/**
 	 * 创建职位接口
 	 * 
-	 * @param jobName 不能为空
-	 * @param roleFlag 不能为空
-	 * @param departmentId 不能为空
+	 * @param job
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("addJob")
 	@ResponseBody
-	public Result addJob(String jobName,int roleFlag,String belongId,HttpServletRequest request) {
+	public Result addJob(Job job,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
-		String jobId=IdGen.uuid();
-		if(jobName==null||jobName=="") 
-			return Result.makeFailResult("职位名不能为空");
-		Job job=jobService.getJobByName(jobName);
-		if(job!=null)
+		Job orderJob=jobService.getJobByName(job.getJobName());
+		if(orderJob!=null)
 			return Result.makeFailResult("职位名已存在");
-		if(belongId==null)
-			return Result.makeFailResult("部门Id不能为空");
-		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String createTime=df.format(new Date());
-		Job newJob=new Job(jobId,jobName,roleFlag,belongId,createTime);
-		int result=jobService.insertNewJob(newJob);
+		int result=jobService.insertNewJob(job);
 		if(result==0) 
 			return Result.makeFailResult("职位创建失败");
 		else 
 			return Result.makeSuccessResult("职位创建成功");
 	}
+	
 	/**
-	 * 修改职业信息接口
+	 * 修改职位信息接口
 	 * 
-	 * @param orderJobId
-	 * @param newJobName
-	 * @param newRoleFlag
-	 * @param newBelongId
+	 * @param job
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("updateJob")
 	@ResponseBody
-	public Result updateJob(String orderJobId,String newJobName,Integer newRoleFlag,String newBelongId,HttpServletRequest request) {
+	public Result updateJob(Job job,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
-		Job orderJob=jobService.getJobById(orderJobId);
-		if(orderJobId==null||orderJob==null)
-			return Result.makeFailResult("找不到当前的职业信息");
-		int result=0;
-		if(newRoleFlag==null) 
-			result=jobService.updateInfoById(orderJobId, newJobName, null, newBelongId);
-		result=jobService.updateInfoById(orderJobId,newJobName,newRoleFlag,newBelongId);
-		if(result==0) 
-			return Result.makeFailResult("职业信息修改失败");
+		Job orderJob=jobService.getJobById(job.getId());
+		if(orderJob==null)
+			return Result.makeFailResult("找不到当前的职位信息");
+		int result=jobService.updateInfoById(job);
+		if(result==0)
+			return Result.makeFailResult("职位信息修改失败");
 		else 
-			return Result.makeSuccessResult("职业信息修改成功");
-			
+			return Result.makeSuccessResult("职位信息修改成功");
 	}
 	
 	/**
@@ -311,37 +292,25 @@ public class DepartmentController {
 	/**
 	 * 成员基本信息的修改接口
 	 * 
+	 * @param user
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("updateMemberInfo")
 	@ResponseBody
-	public Result updateMemberInfo(HttpServletRequest request) {
+	public Result updateMemberInfo(User user,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
-		String memberId=request.getParameter("memberId");
-		String memberName=request.getParameter("memberName");
-		String memberDigits=request.getParameter("memberDigits");
-		String memberDepartment=request.getParameter("memberDepartment");
-		String memberMajor=request.getParameter("memberMajor");
-		String memberClass=request.getParameter("memberClass");
-		String memberGrade=request.getParameter("memberGrade");
-		String memberPhone=request.getParameter("memberPhone");
-		String memberEmail=request.getParameter("memberEmail");
-		User orderUser=userService.getUserById(memberId);
+		//System.out.println(user.getId());
+		User orderUser=userService.getUserById(user.getId());
 		if(orderUser==null)
 			return Result.makeFailResult("找不到当前修改的成员");
-		if(memberName==null&&memberDigits==null&&memberDepartment==null&&
-				memberMajor==null&&memberClass==null&&memberGrade==null&&memberPhone==null&&memberEmail==null)
-			return Result.makeFailResult("成员信息修改失败");
-		User newInfoUser=new User(memberId,memberName,memberDigits,memberDepartment,
-				memberMajor,memberClass,memberGrade,memberPhone,memberEmail);
-		int result=userService.updateMemberInfoById(newInfoUser);
+		int result=userService.updateMemberInfoById(user);
 		if(result==0)
 			return Result.makeFailResult("成员信息修改失败");
-		else 
+		else
 			return Result.makeSuccessResult("成员信息修改成功");
 	}
 	

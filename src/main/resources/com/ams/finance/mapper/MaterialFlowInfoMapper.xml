@@ -4,67 +4,61 @@
 	<resultMap id="BaseResultMap"
 		type="com.ams.finance.entity.MaterialFlowInfo">
 		<id column="Id" property="id" jdbcType="VARCHAR" />
-		<result column="MaterialId" property="materialid"
+		<result column="MaterialId" property="materialId"
 			jdbcType="VARCHAR" />
-		<result column="infoType" property="infotype"
+		<result column="infoType" property="infoType"
 			jdbcType="INTEGER" />
 		<result column="number" property="number" jdbcType="INTEGER" />
 		<result column="purpose" property="purpose" jdbcType="VARCHAR" />
 		<result column="date" property="date" jdbcType="VARCHAR" />
-		<result column="organizationName" property="organizationname"
+		<result column="organizationName" property="organizationName"
 			jdbcType="VARCHAR" />
-		<result column="principalName" property="principalname"
+		<result column="principalName" property="principalName"
 			jdbcType="VARCHAR" />
-		<result column="principalPhone" property="principalphone"
+		<result column="principalPhone" property="principalPhone"
 			jdbcType="VARCHAR" />
-		<result column="auditorId" property="auditorid"
+		<result column="auditorId" property="auditorId"
 			jdbcType="VARCHAR" />
 		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
-		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		Id, MaterialId, infoType, number, purpose, date, organizationName,
 		principalName,
-		principalPhone, auditorId, remarks, delFlag
+		principalPhone, auditorId, remarks,delFlag
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
-		parameterType="java.lang.String">
-		select
-		<include refid="Base_Column_List" />
-		from material_flow_info
-		where Id = #{id,jdbcType=VARCHAR}
+	<select id="getMaterialsFlowInfoCount" resultType="java.lang.Integer">
+	select count(*)
+	from material_flow_info
+	where delFlag=0
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from material_flow_info
-		where Id = #{id,jdbcType=VARCHAR}
-	</delete>
-	<insert id="insert"
-		parameterType="com.ams.finance.entity.MaterialFlowInfo">
-		insert into material_flow_info (Id, MaterialId, infoType,
-		number, purpose, date,
-		organizationName, principalName, principalPhone,
-		auditorId, remarks, delFlag
-		)
-		values (#{id,jdbcType=VARCHAR}, #{materialid,jdbcType=VARCHAR},
-		#{infotype,jdbcType=INTEGER},
-		#{number,jdbcType=INTEGER}, #{purpose,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR},
-		#{organizationname,jdbcType=VARCHAR},
-		#{principalname,jdbcType=VARCHAR}, #{principalphone,jdbcType=VARCHAR},
-		#{auditorid,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR},
-		#{delflag,jdbcType=INTEGER}
-		)
-	</insert>
-	<insert id="insertSelective"
+	<select id="getMaterialFlowInfoList" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List"/>
+		from material_flow_info
+		where delFlag=0
+		<if test="queryInfo != null and queryInfo !=''">
+		and materialId like concat("%",#{queryInfo},"%")
+			or purpose like concat("%",#{queryInfo},"%")
+			or date like concat("%",#{queryInfo},"%")
+			or organizationName like concat("%",#{queryInfo},"%")
+			or principalName like concat("%",#{queryInfo},"%")
+			or principalPhone like concat("%",#{queryInfo},"%")
+			or remarks like concat("%",#{queryInfo},"%")
+		</if>
+		LIMIT #{offset},#{limit}
+	</select>
+		<insert id="insertSelective"
 		parameterType="com.ams.finance.entity.MaterialFlowInfo">
 		insert into material_flow_info
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="id != null">
 				Id,
 			</if>
-			<if test="materialid != null">
+			<if test="materialId != null">
 				MaterialId,
 			</if>
-			<if test="infotype != null">
+			<if test="infoType != null">
 				infoType,
 			</if>
 			<if test="number != null">
@@ -76,34 +70,31 @@
 			<if test="date != null">
 				date,
 			</if>
-			<if test="organizationname != null">
+			<if test="organizationName != null">
 				organizationName,
 			</if>
-			<if test="principalname != null">
+			<if test="principalName != null">
 				principalName,
 			</if>
-			<if test="principalphone != null">
+			<if test="principalPhone != null">
 				principalPhone,
 			</if>
-			<if test="auditorid != null">
+			<if test="auditorId != null">
 				auditorId,
 			</if>
 			<if test="remarks != null">
 				remarks,
-			</if>
-			<if test="delflag != null">
-				delFlag,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
 				#{id,jdbcType=VARCHAR},
 			</if>
-			<if test="materialid != null">
-				#{materialid,jdbcType=VARCHAR},
+			<if test="materialId != null">
+				#{materialId,jdbcType=VARCHAR},
 			</if>
-			<if test="infotype != null">
-				#{infotype,jdbcType=INTEGER},
+			<if test="infoType != null">
+				#{infoType,jdbcType=INTEGER},
 			</if>
 			<if test="number != null">
 				#{number,jdbcType=INTEGER},
@@ -114,80 +105,22 @@
 			<if test="date != null">
 				#{date,jdbcType=VARCHAR},
 			</if>
-			<if test="organizationname != null">
-				#{organizationname,jdbcType=VARCHAR},
+			<if test="organizationName != null">
+				#{organizationName,jdbcType=VARCHAR},
 			</if>
-			<if test="principalname != null">
-				#{principalname,jdbcType=VARCHAR},
+			<if test="principalName != null">
+				#{principalName,jdbcType=VARCHAR},
 			</if>
-			<if test="principalphone != null">
-				#{principalphone,jdbcType=VARCHAR},
+			<if test="principalPhone != null">
+				#{principalPhone,jdbcType=VARCHAR},
 			</if>
-			<if test="auditorid != null">
-				#{auditorid,jdbcType=VARCHAR},
+			<if test="auditorId != null">
+				#{auditorId,jdbcType=VARCHAR},
 			</if>
 			<if test="remarks != null">
 				#{remarks,jdbcType=VARCHAR},
 			</if>
-			<if test="delflag != null">
-				#{delflag,jdbcType=INTEGER},
-			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective"
-		parameterType="com.ams.finance.entity.MaterialFlowInfo">
-		update material_flow_info
-		<set>
-			<if test="materialid != null">
-				MaterialId = #{materialid,jdbcType=VARCHAR},
-			</if>
-			<if test="infotype != null">
-				infoType = #{infotype,jdbcType=INTEGER},
-			</if>
-			<if test="number != null">
-				number = #{number,jdbcType=INTEGER},
-			</if>
-			<if test="purpose != null">
-				purpose = #{purpose,jdbcType=VARCHAR},
-			</if>
-			<if test="date != null">
-				date = #{date,jdbcType=VARCHAR},
-			</if>
-			<if test="organizationname != null">
-				organizationName = #{organizationname,jdbcType=VARCHAR},
-			</if>
-			<if test="principalname != null">
-				principalName = #{principalname,jdbcType=VARCHAR},
-			</if>
-			<if test="principalphone != null">
-				principalPhone = #{principalphone,jdbcType=VARCHAR},
-			</if>
-			<if test="auditorid != null">
-				auditorId = #{auditorid,jdbcType=VARCHAR},
-			</if>
-			<if test="remarks != null">
-				remarks = #{remarks,jdbcType=VARCHAR},
-			</if>
-			<if test="delflag != null">
-				delFlag = #{delflag,jdbcType=INTEGER},
-			</if>
-		</set>
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
-	<update id="updateByPrimaryKey"
-		parameterType="com.ams.finance.entity.MaterialFlowInfo">
-		update material_flow_info
-		set MaterialId = #{materialid,jdbcType=VARCHAR},
-		infoType = #{infotype,jdbcType=INTEGER},
-		number = #{number,jdbcType=INTEGER},
-		purpose = #{purpose,jdbcType=VARCHAR},
-		date = #{date,jdbcType=VARCHAR},
-		organizationName = #{organizationname,jdbcType=VARCHAR},
-		principalName = #{principalname,jdbcType=VARCHAR},
-		principalPhone = #{principalphone,jdbcType=VARCHAR},
-		auditorId = #{auditorid,jdbcType=VARCHAR},
-		remarks = #{remarks,jdbcType=VARCHAR},
-		delFlag = #{delflag,jdbcType=INTEGER}
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
+
 </mapper>

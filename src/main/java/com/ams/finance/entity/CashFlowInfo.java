@@ -33,6 +33,14 @@ public class CashFlowInfo {
 	 */
     private String auditorId;
     /**
+	 * 审核状态(0-未审核 1-通过 2-未通过)
+	 */
+	private Integer auditFlag;
+	/**
+	 * 执行标志(0-未执行 1-已执行)
+	 */
+	private Integer executeFlag;
+    /**
 	 * 删除标志 0-未删除 1-已删除
 	 */
     private Integer delFlag;
@@ -92,6 +100,14 @@ public class CashFlowInfo {
     public void setAuditorId(String auditorId) {
         this.auditorId = auditorId == null ? null : auditorId.trim();
     }
+    
+    public Integer getAuditFlag() {
+        return auditFlag;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
 
     public Integer getDelFlag() {
         return delFlag;
@@ -100,4 +116,12 @@ public class CashFlowInfo {
     public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
     }
+
+	public Integer getExecuteFlag() {
+		return executeFlag;
+	}
+
+	public void setExecuteFlag(Integer executeFlag) {
+		this.executeFlag = executeFlag;
+	}
 }

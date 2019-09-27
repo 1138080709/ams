@@ -76,6 +76,18 @@
 		and
 		belongId=#{departmentId,jdbcType=VARCHAR}
 	</select>
+	<select id="getUsersCount" resultType="java.lang.Integer" >
+		select count(*)
+		from user
+		where delFlag=0		
+	</select>
+	<select id="getUsersByPage" parameterType="java.lang.Integer"
+		resultType="com.ams.user.entity.User">
+		select *
+		from user
+		where delFlag=0
+		limit #{startPos,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
 	<update id="updatePasswordByDigits">
 		update user
 		<set>
@@ -129,6 +141,50 @@
 		where Id=#{memberId,jdbcType=VARCHAR}
 		and delFlag=0
 	</update>
+	<update id="updateDelFlagByDigits">
+		update user
+		<set>
+			<if test="digits!=null">
+				delFlag=#{delFlag,jdbcType=INTEGER}
+			</if>
+		</set>
+		where digits=#{digits,jdbcType=INTEGER}
+		and delFlag = 0
+	</update>
+	<update id="updateUserInfoByDigits" parameterType="java.lang.String">
+		update user
+		<set>
+			<if test="name != null and name != ''">
+				name=#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="department != null and department != ''">
+				department=#{department,jdbcType=VARCHAR},
+			</if>
+			<if test="major != null and major != ''">
+				major=#{major,jdbcType=VARCHAR},
+			</if>
+			<if test="belongClass != null and major != ''">
+				belongClass=#{belongClass,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null and grade != ''">
+				grade=#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != ''">
+				phone=#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				email=#{email,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where digits=#{digits,jdbcType=VARCHAR} 
+		and delFlag=0
+	</update>
+	<insert id="addSingleUser" parameterType="com.ams.user.entity.User">
+		insert into user (Id,name,digits,createTime,roleFlag)
+		values
+		(#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{digits,jdbcType=VARCHAR},
+		#{createTime,jdbcType=VARCHAR},#{roleFlag,jdbcType=INTEGER})
+	</insert>
 	<insert id="insertUserList" parameterType="java.util.List">
 		insert into user
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -233,142 +289,6 @@
 				</if>
 			</trim>
 		</foreach>
-	</insert>
-
-
-
-
-
-
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from user
-		where Id = #{id,jdbcType=VARCHAR}
-	</delete>
-	<insert id="insert" parameterType="com.ams.user.entity.User">
-		insert into user (Id, name,
-		digits,
-		department, major, belongClass,
-		grade, password, phone,
-		email,
-		jobId, belongId,
-		roleFlag, financeFlag, createTime,
-		delFlag)
-		values
-		(#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
-		#{digits,jdbcType=VARCHAR},
-		#{department,jdbcType=VARCHAR},
-		#{major,jdbcType=VARCHAR}, #{belongclass,jdbcType=VARCHAR},
-		#{grade,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-		#{phone,jdbcType=VARCHAR},
-		#{email,jdbcType=VARCHAR},
-		#{jobid,jdbcType=VARCHAR}, #{belongid,jdbcType=VARCHAR},
-		#{roleflag,jdbcType=INTEGER}, #{financeflag,jdbcType=INTEGER},
-		#{createtime,jdbcType=VARCHAR},
-		#{delflag,jdbcType=INTEGER})
-	</insert>
-	<insert id="insertSelective"
-		parameterType="com.ams.user.entity.User">
-		insert into user
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				Id,
-			</if>
-			<if test="name != null">
-				name,
-			</if>
-			<if test="digits != null">
-				digits,
-			</if>
-			<if test="department != null">
-				department,
-			</if>
-			<if test="major != null">
-				major,
-			</if>
-			<if test="belongclass != null">
-				belongClass,
-			</if>
-			<if test="grade != null">
-				grade,
-			</if>
-			<if test="password != null">
-				password,
-			</if>
-			<if test="phone != null">
-				phone,
-			</if>
-			<if test="email != null">
-				email,
-			</if>
-			<if test="jobid != null">
-				jobId,
-			</if>
-			<if test="belongid != null">
-				belongId,
-			</if>
-			<if test="roleflag != null">
-				roleFlag,
-			</if>
-			<if test="financeflag != null">
-				financeFlag,
-			</if>
-			<if test="createtime != null">
-				createTime,
-			</if>
-			<if test="delflag != null">
-				delFlag,
-			</if>
-		</trim>
-		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=VARCHAR},
-			</if>
-			<if test="name != null">
-				#{name,jdbcType=VARCHAR},
-			</if>
-			<if test="digits != null">
-				#{digits,jdbcType=VARCHAR},
-			</if>
-			<if test="department != null">
-				#{department,jdbcType=VARCHAR},
-			</if>
-			<if test="major != null">
-				#{major,jdbcType=VARCHAR},
-			</if>
-			<if test="belongclass != null">
-				#{belongclass,jdbcType=VARCHAR},
-			</if>
-			<if test="grade != null">
-				#{grade,jdbcType=VARCHAR},
-			</if>
-			<if test="password != null">
-				#{password,jdbcType=VARCHAR},
-			</if>
-			<if test="phone != null">
-				#{phone,jdbcType=VARCHAR},
-			</if>
-			<if test="email != null">
-				#{email,jdbcType=VARCHAR},
-			</if>
-			<if test="jobid != null">
-				#{jobid,jdbcType=VARCHAR},
-			</if>
-			<if test="belongid != null">
-				#{belongid,jdbcType=VARCHAR},
-			</if>
-			<if test="roleflag != null">
-				#{roleflag,jdbcType=INTEGER},
-			</if>
-			<if test="financeflag != null">
-				#{financeflag,jdbcType=INTEGER},
-			</if>
-			<if test="createtime != null">
-				#{createtime,jdbcType=VARCHAR},
-			</if>
-			<if test="delflag != null">
-				#{delflag,jdbcType=INTEGER},
-			</if>
-		</trim>
 	</insert>
 
 </mapper>

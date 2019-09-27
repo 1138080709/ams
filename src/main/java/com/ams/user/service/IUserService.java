@@ -31,4 +31,15 @@ public interface IUserService {
 	public void importExcelInfo(InputStream in, MultipartFile file);
 
 	public XSSFWorkbook exportExcelInfo();
+
+	public int addSingleUser(User user);
+
+	public int updateDelFlagByDigits(String digits, int i);
+
+	public int updateUserInfoByDigits(String digits, String name, String department, String major, String belongClass,
+			String grade, String phone, String email, User user);
+
+	public int getUsersCount();
+
+	public List<User> getUsersByPage(int startPos, int pageSize);
 }

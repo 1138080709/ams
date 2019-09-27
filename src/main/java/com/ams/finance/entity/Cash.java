@@ -11,7 +11,7 @@ public class Cash {
     /**
 	 * 余额
 	 */
-    private String money;
+    private int money;
     /**
 	 * 删除标志 (0-未删除 1-已删除)
 	 */
@@ -25,12 +25,12 @@ public class Cash {
         this.id = id == null ? null : id.trim();
     }
 
-    public String getMoney() {
+    public int getMoney() {
         return money;
     }
 
-    public void setMoney(String money) {
-        this.money = money == null ? null : money.trim();
+    public void setMoney(int money) {
+        this.money = money;
     }
 
     public Integer getDelFlag() {

@@ -14,12 +14,12 @@
 		</commentGenerator>
 		<!-- 数据库链接URL，用户名、密码 -->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://localhost:3306/ams_db" userId="root"
+			connectionURL="jdbc:mysql://120.79.141.171:3306/ams_db" userId="ams_db"
 			password="123456" />
 
 		<!-- 生成Model实体类的包名和位置 -->
 		<javaModelGenerator
-			targetPackage="com.ams.user.entity" targetProject="src/main/java">
+			targetPackage="com.ams.finance.entity" targetProject="src/main/java">
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
@@ -32,13 +32,13 @@
 
 		<!-- 生成Mapper接口的包名和位置 -->
 		<javaClientGenerator type="XMLMAPPER"
-			targetPackage="com.ams.user.dao" targetProject="src/main/java">
+			targetPackage="com.ams.finance.dao" targetProject="src/main/java">
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
 
 
 		<!-- 要生成的表 tableName是数据库中的表名或者视图名 domainObjectName是实体类名 -->
-		<table tableName="user" domainObjectName="User"
+		<table tableName="cash_flow_info" domainObjectName="CashFlowInfo"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false"></table>

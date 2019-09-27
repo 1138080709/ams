@@ -27,9 +27,11 @@ public interface DepartmentDao {
 
 	int getAlldepartmentCount();
 	
-	int updateInfoById(@Param("departmentId")String departmentId, @Param("newDepartmentName")String newDepartmentName, @Param("newMinisterId")String newMinisterId, @Param("newDescription")String newDescription);
+	//int updateInfoById(@Param("departmentId")String departmentId, @Param("newDepartmentName")String newDepartmentName, @Param("newMinisterId")String newMinisterId, @Param("newDescription")String newDescription);
 
 	int updateDelFlagById(String selectDepartmentId);
 
 	Department selectDepartmentByName(String departmentName);
+
+	int updateInfoById(Department department);
 }

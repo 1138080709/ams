@@ -177,4 +177,51 @@ public class UserServiceImpl implements IUserService {
 		}
 		return book;
 	}
+
+	@Override
+	public int addSingleUser(User user) {
+		return this.userDao.addSingleUser(user);
+	}
+
+	@Override
+	public int updateDelFlagByDigits(String digits, int delFlag) {
+		return this.userDao.updateDelFlagByDigits(digits,delFlag);
+	}
+
+	@Override
+	public int updateUserInfoByDigits(String digits, String name, String department, String major, String belongClass,
+			String grade, String phone, String email, User user) {
+		if(name == null) {
+			name = user.getName();
+		}
+		if(department == null) {
+			department = user.getDepartment();
+		}
+		if(major == null) {
+			major = user.getMajor();
+		}
+		if(belongClass == null) {
+			belongClass = user.getBelongClass();
+		}
+		if(grade == null) {
+			grade = user.getGrade();
+		}
+		if(phone == null) {
+			phone = user.getPhone();
+		}
+		if(email == null) {
+			email = user.getEmail();
+		}
+		return this.userDao.updateUserInfoByDigits(digits, name, department, major, belongClass, grade, phone, email);
+	}
+
+	@Override
+	public int getUsersCount() {
+		return this.userDao.getUsersCount();
+	}
+
+	@Override
+	public List<User> getUsersByPage(int startPos, int pageSize) {
+		return this.userDao.getUsersByPage(startPos, pageSize);
+	}
 }

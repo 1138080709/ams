@@ -1,17 +1,33 @@
 package com.ams.finance.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ams.finance.entity.Materials;
 
 public interface MaterialsDao {
-    int deleteByPrimaryKey(String id);
+	/*
+	 * int deleteByPrimaryKey(String id);
+	 * 
+	 * int insert(Materials record);
+	 * 
+	 * Materials selectByPrimaryKey(String id);
+	 * 
+	 * 
+	 * 
+	 * int updateByPrimaryKey(Materials record);
+	 */
 
-    int insert(Materials record);
+	int insertSelective(Materials record);
 
-    int insertSelective(Materials record);
+	Materials selectById(String id);
 
-    Materials selectByPrimaryKey(String id);
+	int updateMaterials(Materials record);
 
-    int updateByPrimaryKeySelective(Materials record);
+	int getMaterialsCount();
 
-    int updateByPrimaryKey(Materials record);
+	List<Materials> getMaterialsList(@Param("queryInfo")String queryInfo, @Param("offset")int offset, @Param("limit")int limit);
+
+	int updateMaterialsDelFlag(List<String> idList);
 }

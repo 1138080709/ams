@@ -25,6 +25,10 @@ public class Materials {
 	 */
     private String description;
     /**
+	 * 创建时间
+	 */
+    private String createTime;
+    /**
 	 * 删除标志 (0-未删除 1-已删除)
 	 */
     private Integer delFlag;
@@ -67,6 +71,14 @@ public class Materials {
 
     public void setDescription(String description) {
         this.description = description == null ? null : description.trim();
+    }
+    
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime == null ? null : createTime.trim();
     }
 
     public Integer getDelFlag() {

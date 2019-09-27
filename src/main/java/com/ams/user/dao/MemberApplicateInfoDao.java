@@ -24,5 +24,8 @@ public interface MemberApplicateInfoDao {
 	int getAllApplicateCount();
 
 	int updateApplicateSuccessStatus(List<String> idList);
+	
 	int updateApplicateFailStatus(List<String> idList);
+
+	MemberApplicateInfo getMemberApplicateInfoByDigit(String digits);
 }

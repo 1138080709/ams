@@ -1,6 +1,8 @@
 package com.ams.department.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,6 +16,7 @@ import com.ams.department.dto.QuerySaveJobInfoDTO;
 import com.ams.department.entity.Department;
 import com.ams.department.entity.Job;
 import com.ams.department.service.IJobService;
+import com.ams.utils.IdGen;
 
 @Service("jobService")
 public class JobServiceImpl implements IJobService{
@@ -45,15 +48,16 @@ public class JobServiceImpl implements IJobService{
 	}
 
 	public int insertNewJob(Job job) {
+		String jobId=IdGen.uuid();
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String createTime=df.format(new Date());
+		job.setId(jobId);
+		job.setCreateTime(createTime);
 		return this.jobDao.insert(job);
 	}
 
 	public Job getJobById(String orderJobId) {
 		return this.jobDao.getJobById(orderJobId);
-	}
-
-	public int updateInfoById(String orderJobId, String newJobName, Integer newRoleFlag, String newBelongId) {
-		return this.jobDao.updateInfoById(orderJobId,newJobName,newRoleFlag,newBelongId);
 	}
 
 	public int updateDelFlagById(String selectJobId) {
@@ -67,6 +71,11 @@ public class JobServiceImpl implements IJobService{
 	@Override
 	public Job getJobByName(String jobName) {
 		return this.jobDao.getJobByName(jobName);
+	}
+
+	@Override
+	public int updateInfoById(Job job) {
+		return this.jobDao.updateInfoById(job.getId(), job.getJobName(), job.getRoleFlag(), job.getBelongId());
 	}
 	
 }
