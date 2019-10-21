@@ -77,5 +77,10 @@ public class JobServiceImpl implements IJobService{
 	public int updateInfoById(Job job) {
 		return this.jobDao.updateInfoById(job.getId(), job.getJobName(), job.getRoleFlag(), job.getBelongId());
 	}
+
+	@Override
+	public List<Job> getJobList() {
+		return this.jobDao.getJobList();
+	}
 	
 }

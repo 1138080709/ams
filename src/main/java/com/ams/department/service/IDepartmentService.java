@@ -30,4 +30,6 @@ public interface IDepartmentService {
 	public int insertNewDepartment(Department department, User ministerUser);
 
 	public int updateInfoById(Department department, User ministerUser);
+
+	public List<Department> getDepartmentList();
 }

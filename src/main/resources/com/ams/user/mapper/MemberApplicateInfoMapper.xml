@@ -29,6 +29,21 @@
 		applicateSection,
 		applicateJob, applicateFlag, applicateTime, delFlag
 	</sql>
+	<select id="selectMemberApplicateInfoById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+		<include refid="Base_Column_List" />
+		from member_applicate_info
+		where delFlag=0
+		and applicateFlag=2
+		and Id=#{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getInfoById" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from member_applicate_info
+		where delFlag=0
+		</select>
 	<select id="getMemberApplicateInfoByDigit" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
@@ -58,7 +73,7 @@
 			or applicateJob like concat(#{queryInfo},"%")
 			or applicateTime like concat(#{queryInfo},"%")
 		</if>
-		limit #{offset},#{limit}
+		limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
 	</select>
 	<update id="updateApplicateSuccessStatus" parameterType="java.util.List">
 		update member_applicate_info

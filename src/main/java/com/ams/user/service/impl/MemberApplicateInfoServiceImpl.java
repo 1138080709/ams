@@ -20,7 +20,7 @@ public class MemberApplicateInfoServiceImpl implements IMemberApplicateInfoServi
 	private MemberApplicateInfoDao memberApplicateInfoDao;
 	
 	public MemberApplicateInfo getMemberApplicateInfoById(String MemberApplicateInfoId) {
-		return this.memberApplicateInfoDao.selectByPrimaryKey(MemberApplicateInfoId);
+		return this.memberApplicateInfoDao.getInfoById(MemberApplicateInfoId);
 	}
 
 	public List<MemberApplicateInfo> getAllApplicateInfoList(String queryInfo, int offset, int limit) {

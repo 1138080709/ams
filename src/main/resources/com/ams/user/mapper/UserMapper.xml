@@ -24,6 +24,8 @@
 			jdbcType="INTEGER" />
 		<result column="createTime" property="createTime"
 			jdbcType="VARCHAR" />
+		<result column="currentLoginTime" property="currentLoginTime"
+			jdbcType="VARCHAR" />
 		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
@@ -31,7 +33,7 @@
 		password, phone,
 		email,
 		jobId, belongId, roleFlag, financeFlag,
-		createTime, delFlag
+		createTime,currentLoginTime, delFlag
 	</sql>
 	<select id="getUserById" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
@@ -64,9 +66,24 @@
 		where delFlag=0
 		and belongId=#{departmentId}
 		<if test="queryInfo != null and queryInfo != ''">
-			and name like concat(#{queryInfo},"%")
+			and name like concat(#{queryInfo,jdbcType=VARCHAR},"%")
 		</if>
-		limit #{offset},#{limit}
+		limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+	</select>
+	<select id="getMemberList"
+		resultType="com.ams.user.entity.User">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
+		and belongId=#{departmentId}
+	</select>
+	<select id="getUserList"
+		resultType="com.ams.user.entity.User">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
 	</select>
 	<select id="getMemberCountByDepartmentId"
 		resultType="java.lang.Integer">
@@ -141,6 +158,16 @@
 		where Id=#{memberId,jdbcType=VARCHAR}
 		and delFlag=0
 	</update>
+	<update id="updateCurrentLoginTimeById">
+		update user
+		<set>
+			<if test="currentLoginTime!=null and currentLoginTime!=''">
+				currentLoginTime=#{currentLoginTime,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where Id=#{id,jdbcType=VARCHAR}
+		and delFlag=0
+	</update>
 	<update id="updateDelFlagByDigits">
 		update user
 		<set>
@@ -148,7 +175,7 @@
 				delFlag=#{delFlag,jdbcType=INTEGER}
 			</if>
 		</set>
-		where digits=#{digits,jdbcType=INTEGER}
+		where digits=#{digits,jdbcType=VARCHAR}
 		and delFlag = 0
 	</update>
 	<update id="updateUserInfoByDigits" parameterType="java.lang.String">

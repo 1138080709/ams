@@ -21,7 +21,9 @@ import com.ams.department.dto.QuerySaveJobInfoDTO;
 import com.ams.department.dto.QuerySaveMemberInfoDTO;
 import com.ams.department.entity.Department;
 import com.ams.department.entity.Job;
+import com.ams.user.dao.MemberApplicateInfoDao;
 import com.ams.user.dao.UserDao;
+import com.ams.user.entity.MemberApplicateInfo;
 import com.ams.user.entity.User;
 import com.ams.user.service.IUserService;
 import com.ams.utils.ExcelUtil;
@@ -35,6 +37,8 @@ public class UserServiceImpl implements IUserService {
 	private DepartmentDao departmentDao;
 	@Resource
 	private JobDao jobDao;
+	@Resource
+	private MemberApplicateInfoDao memberApplicateInfoDao; 
 	
 	public User getUserById(String userId) {
 		return this.userDao.getUserById(userId);
@@ -223,5 +227,48 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public List<User> getUsersByPage(int startPos, int pageSize) {
 		return this.userDao.getUsersByPage(startPos, pageSize);
+	}
+
+	@Override
+	public int addUserByApplication(List<String> idList) {
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		MemberApplicateInfo memberInfo=null;
+		List<User> userList=new ArrayList<User>();
+		for(String id:idList) {
+		memberInfo=memberApplicateInfoDao.selectMemberApplicateInfoById(id);
+		User user=new User();
+		user.setId(IdGen.uuid());
+		user.setName(memberInfo.getName());
+		user.setDigits(memberInfo.getDigits());
+		user.setDepartment(memberInfo.getDepartment());
+		user.setGrade(memberInfo.getGrade());
+		user.setMajor(memberInfo.getMajor());
+		user.setBelongClass(memberInfo.getBelongClass());
+		user.setPhone(memberInfo.getPhone());
+		user.setEmail(memberInfo.getEmail());
+		user.setBelongId(memberInfo.getApplicateSection());
+		user.setJobId(memberInfo.getApplicateJob());
+		Job job=jobDao.getJobById(memberInfo.getApplicateJob());
+		user.setRoleFlag(job.getRoleFlag());
+		user.setCreateTime(df.format(new Date()));
+		userList.add(user);
+		}
+		return this.userDao.insertUserList(userList);
+	}
+
+	@Override
+	public int updateCurrentLoginTimeById(String id, String date) {
+		return this.userDao.updateCurrentLoginTimeById(id,date);
+		
+	}
+
+	@Override
+	public List<User> getUserList() {
+		return this.userDao.getUserList();
+	}
+
+	@Override
+	public List<Department> getMemberList(String departmentId) {
+		return this.userDao.getMemberList(departmentId);
 	}
 }

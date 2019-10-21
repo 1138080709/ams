@@ -65,6 +65,10 @@ public class User {
 	 */
     private String createTime;
     /**
+     * 最近登录时间
+     */
+    private String currentLoginTime;
+    /**
 	 * 删除标志 (0-未删除 1-已删除)
 	 */
     private Integer delFlag;
@@ -213,4 +217,12 @@ public class User {
     public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
     }
+
+	public String getCurrentLoginTime() {
+		return currentLoginTime;
+	}
+
+	public void setCurrentLoginTime(String currentLoginTime) {
+		this.currentLoginTime = currentLoginTime == null ? null : currentLoginTime.trim();
+	}
 }

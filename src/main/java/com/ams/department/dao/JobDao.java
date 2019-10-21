@@ -33,4 +33,6 @@ public interface JobDao {
 	int getJobCountByDepartmentId(String selectDepartmentId);
 
 	Job getJobByName(String jobName);
+
+	List<Job> getJobList();
 }

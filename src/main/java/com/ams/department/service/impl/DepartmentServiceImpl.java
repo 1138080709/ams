@@ -74,7 +74,7 @@ public class DepartmentServiceImpl implements IDepartmentService{
 		String createTime=df.format(new Date());
 		department.setId(departmentId);
 		department.setCreateTime(createTime);
-		if(ministerUser==null)
+		if(ministerUser!=null)
 			department.setMinisterId(ministerUser.getId());
 		
 		return this.departmentDao.insert(department);
@@ -86,5 +86,11 @@ public class DepartmentServiceImpl implements IDepartmentService{
 			department.setMinisterId(ministerUser.getId());
 		return this.departmentDao.updateInfoById(department);
 	}
+
+	@Override
+	public List<Department> getDepartmentList() {
+		return this.departmentDao.getDepartmentList();
+	}
+
 
 }

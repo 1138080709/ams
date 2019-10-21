@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ams.department.dto.QuerySaveMemberInfoDTO;
+import com.ams.department.entity.Department;
 import com.ams.user.entity.User;
 
 public interface IUserService {
@@ -42,4 +43,12 @@ public interface IUserService {
 	public int getUsersCount();
 
 	public List<User> getUsersByPage(int startPos, int pageSize);
+
+	public int addUserByApplication(List<String> idList);
+
+	public int updateCurrentLoginTimeById(String id, String date);
+
+	public List<User> getUserList();
+
+	public List<Department> getMemberList(String departmentId);
 }

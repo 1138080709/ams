@@ -47,6 +47,13 @@
 		</if>
 		LIMIT #{offset},#{limit}
 	</select>
+	<select id="getDepartmentList"
+		resultType="com.ams.department.entity.Department">
+		select
+		<include refid="Base_Column_List"></include>
+		from department
+		where delFlag=0
+	</select>
 	<select id="getAlldepartmentCount"
 		resultType="java.lang.Integer">
 		select count(*)

@@ -34,4 +34,6 @@ public interface DepartmentDao {
 	Department selectDepartmentByName(String departmentName);
 
 	int updateInfoById(Department department);
+
+	List<Department> getDepartmentList();
 }

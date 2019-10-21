@@ -27,6 +27,13 @@
 		</if>
 		LIMIT #{offset},#{limit}
 	</select>
+	<select id="getJobList"
+		resultType="com.ams.department.entity.Job">
+		select
+		<include refid="Base_Column_List"></include>
+		from job
+		Where delFlag=0
+	</select>
 	<select id="getAllJobCount" resultType="java.lang.Integer">
 		select count(*)
 		from job

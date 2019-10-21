@@ -43,39 +43,53 @@ public class DepartmentController {
 	private IUserService userService;
 	@Resource
 	private IJobService jobService;
-	/**
-	 * 实现部门列表分页查询 返回DTO类(包含部门与部长的基本信息)
-	 * 测试问题在于，如何将offset和limit的数据从前端传进后端
-	 * 
-	 * @param queryInfo
-	 * @param offset 不能为空
-	 * @param limit  不能为空
-	 * @param request
-	 * @return
-	 */
+//	/**
+//	 * 实现部门列表分页查询 返回DTO类(包含部门与部长的基本信息)
+//	 * 测试问题在于，如何将offset和limit的数据从前端传进后端
+//	 * 
+//	 * @param queryInfo
+//	 * @param offset 不能为空
+//	 * @param limit  不能为空
+//	 * @param request
+//	 * @return
+//	 */
+//	@RequestMapping("getDepartmentList")
+//	@ResponseBody
+//	public Result getDepartmentList(String queryInfo,int offset,int limit,HttpServletRequest request) {
+//		HttpSession session=request.getSession();
+//		User currentUser=(User)session.getAttribute("currentUser");
+//		if(currentUser==null) 
+//			return Result.makeFailResult("用户登录已失效,请重新登录");
+//		Map<String, Object> resultMap = new HashMap<String, Object>();
+//		List<QuerySaveDepartmentInfoDTO> departments = null;
+//		departments = departmentService.getAlldepartmentList(queryInfo, offset, limit); 
+//		int total = 0;
+//		total = departmentService.getAlldepartmentCount();
+//		/*测试代码
+//		int i=1;
+//		for(QuerySaveDepartmentInfoDTO department:departments) {
+//			System.out.println(i+":"+department.getDepartmentName());
+//		}
+//		System.out.println("总数为:"+total);
+//		*/
+//		resultMap.put("departments", departments);
+//		resultMap.put("total", total);
+//		return Result.makeSuccessResult(resultMap);
+//	}
+	
 	@RequestMapping("getDepartmentList")
 	@ResponseBody
-	public Result getDepartmentList(String queryInfo,int offset,int limit,HttpServletRequest request) {
+	public Result getDepartmentList(HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		List<QuerySaveDepartmentInfoDTO> departments = null;
-		departments = departmentService.getAlldepartmentList(queryInfo, offset, limit); 
-		int total = 0;
-		total = departmentService.getAlldepartmentCount();
-		/*测试代码
-		int i=1;
-		for(QuerySaveDepartmentInfoDTO department:departments) {
-			System.out.println(i+":"+department.getDepartmentName());
-		}
-		System.out.println("总数为:"+total);
-		*/
-		resultMap.put("departments", departments);
-		resultMap.put("total", total);
+		List<Department> departmentList=departmentService.getDepartmentList();
+		resultMap.put("departmentList", departmentList);
 		return Result.makeSuccessResult(resultMap);
 	}
+	
 	/**
 	 * 更改部门信息接口
 	 * 
@@ -126,7 +140,7 @@ public class DepartmentController {
 			return Result.makeFailResult("部门名已存在");
 		if(ministerDigits!=null) {
 			ministerUser=userService.getUserByDigits(ministerDigits);
-			if(ministerUser==null)
+			if(ministerUser==null)	
 				return Result.makeFailResult("找不到该成员信息，无法进行设置");
 		}
 		int result=departmentService.insertNewDepartment(department,ministerUser);
@@ -163,8 +177,34 @@ public class DepartmentController {
 			return Result.makeFailResult("部门删除成功");
 	}
 	
+//	/**
+//	 * 实现职位列表分页查询 返回DTO类(包含职位与所属部门的基本信息)
+//	 * 
+//	 * @param queryInfo
+//	 * @param offset 不能为空
+//	 * @param limit 不能为空
+//	 * @param request
+//	 * @return
+//	 */
+//	@RequestMapping("getJobList")
+//	@ResponseBody
+//	public Result getJobList(String queryInfo,int offset,int limit,HttpServletRequest request){
+//		HttpSession session=request.getSession();
+//		User currentUser=(User)session.getAttribute("currentUser");
+//		if(currentUser==null) 
+//			return Result.makeFailResult("用户登录已失效,请重新登录");
+//		Map<String, Object> resultMap = new HashMap<String, Object>();
+//		List<QuerySaveJobInfoDTO> jobs = null;
+//		jobs = jobService.getAllJobList(queryInfo, offset, limit); 
+//		int total = 0;
+//		total = jobService.getAllJobCount();
+//		resultMap.put("jobs", jobs);
+//		resultMap.put("total", total);
+//		return Result.makeSuccessResult(resultMap);
+//	}
+	
 	/**
-	 * 实现职位列表分页查询 返回DTO类(包含职位与所属部门的基本信息)
+	 * 实现职位列表
 	 * 
 	 * @param queryInfo
 	 * @param offset 不能为空
@@ -174,21 +214,16 @@ public class DepartmentController {
 	 */
 	@RequestMapping("getJobList")
 	@ResponseBody
-	public Result getJobList(String queryInfo,int offset,int limit,HttpServletRequest request){
+	public Result getJobList(HttpServletRequest request){
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		List<QuerySaveJobInfoDTO> jobs = null;
-		jobs = jobService.getAllJobList(queryInfo, offset, limit); 
-		int total = 0;
-		total = jobService.getAllJobCount();
-		resultMap.put("jobs", jobs);
-		resultMap.put("total", total);
+		List<Job> jobList = jobService.getJobList();
+		resultMap.put("jobList",jobList);
 		return Result.makeSuccessResult(resultMap);
 	}
-	
 	/**
 	 * 创建职位接口
 	 * 
@@ -262,30 +297,49 @@ public class DepartmentController {
 			return Result.makeSuccessResult("职位删除成功");
 	}
 	
+//	/**
+//	 * 获取部门成员列表，分页查询
+//	 *
+//	 * @param departmentId 不能为空
+//	 * @param queryInfo
+//	 * @param offset	      不能为空
+//	 * @param limit		      不能为空
+//	 * @param request
+//	 * @return
+//	 */
+//	@RequestMapping("getDepartmentMemberList")
+//	@ResponseBody
+//	public Result getDepartmentMemberList(String departmentId,String queryInfo,int offset,int limit,HttpServletRequest request) {
+//		HttpSession session=request.getSession();
+//		User currentUser=(User)session.getAttribute("currentUser");
+//		if(currentUser==null) 
+//			return Result.makeFailResult("用户登录已失效,请重新登录");
+//		Map<String,Object> resultMap=new HashMap<String,Object>();
+//		List<QuerySaveMemberInfoDTO> departmentMembers=null;
+//		departmentMembers=userService.getUserByDepartmentId(departmentId,queryInfo,offset,limit);
+//		int total=0;
+//		total=userService.getMemberCountByDepartmentId(departmentId);
+//		resultMap.put("departmentMembers", departmentMembers);
+//		resultMap.put("total", total);
+//		return Result.makeSuccessResult(resultMap);
+//	}
+	
 	/**
-	 * 获取部门成员列表，分页查询
+	 * 获取部门成员列表
 	 *
 	 * @param departmentId 不能为空
-	 * @param queryInfo
-	 * @param offset	      不能为空
-	 * @param limit		      不能为空
-	 * @param request
 	 * @return
 	 */
-	@RequestMapping("getDepartmentMemberList")
+	@RequestMapping("getMemberList")
 	@ResponseBody
-	public Result getDepartmentMemberList(String departmentId,String queryInfo,int offset,int limit,HttpServletRequest request) {
+	public Result getDepartmentMemberList(String departmentId,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap=new HashMap<String,Object>();
-		List<QuerySaveMemberInfoDTO> departmentMembers=null;
-		departmentMembers=userService.getUserByDepartmentId(departmentId,queryInfo,offset,limit);
-		int total=0;
-		total=userService.getMemberCountByDepartmentId(departmentId);
-		resultMap.put("departmentMembers", departmentMembers);
-		resultMap.put("total", total);
+		List<Department> memberList=userService.getMemberList(departmentId);
+		resultMap.put("memberList", memberList);
 		return Result.makeSuccessResult(resultMap);
 	}
 	
@@ -369,4 +423,47 @@ public class DepartmentController {
 			return Result.makeSuccessResult("信息修改成功");
 	}
 	
+	/**
+	 * 获取用户所在部门名
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getDepartment")
+	@ResponseBody
+	public Result getDepartment(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		if(currentUser.getBelongId()==null)
+			return Result.makeSuccessResult("该用户暂无部门");
+		Department department=departmentService.getDepatmentById(currentUser.getBelongId());
+		if(department==null)
+			return Result.makeFailResult("该用户部门ID无效");
+		resultMap.put("department", department);
+		return Result.makeSuccessResult(resultMap);
+	}
+	
+	/**
+	 * 获取用户职位名
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getJob")
+	@ResponseBody
+	public Result getJob(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		if(currentUser.getJobId()==null)
+			return Result.makeSuccessResult("该用户暂无职位");
+		Job job=jobService.getJobById(currentUser.getJobId());
+		if(job==null)
+			return Result.makeFailResult("该用户职位ID无效");
+		resultMap.put("job", job);
+		return Result.makeSuccessResult(resultMap);
+	}
 }

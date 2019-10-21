@@ -80,8 +80,31 @@
 		<br/>
 		<button type="submit">物资丢失</button>
 	</form>
+<!-- 	<form id="uploadForm" enctype="multipart/form-data" method="post"> 
+		<input id="upfile" type="file">
+		<input type="button" value="导入" id="upload_file" name="btn">
+	</form>	
+	<script type="text/javascript">
+		var upload_file=document.getElementById("upload_file");
+		upload_file.onclick=function(){
+			var cacheVersion=$("#cacheVersion").val();
+    		if(checkData()){  
+    		    $('#uploadForm').ajaxSubmit({    
+   	 	        	url:'http://localhost:8080/ams/file/upload',
+  	  	        	data:{'cacheVersion':cacheVersion},
+        	    	dataType: 'text'
+        		});   
+    		}  
+		}
+		// 获取文件名
+		$("#upfile").on("change", function(){
+		    var file = this.files[0] || this.files.item(0);
+		     $(this).siblings("span").html(file.name);
+		 })
+	</script> -->
 	<script type="text/javascript" src="static/jquery.js"></script>
 	<script type="text/javascript" src="static/test.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 </body>
 
 </html>

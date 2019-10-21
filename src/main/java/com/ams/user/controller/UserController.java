@@ -68,6 +68,7 @@ public class UserController {
 		Map<String,Object> resultMap=new HashMap<String,Object>();
 		User user=null;
 		HttpSession session=request.getSession();
+		System.out.println("SESSIONID:"+session.getId());
 		//System.out.println("学号:"+digits+" "+"密码："+password);
 		if(password==null||digits==null) 
 			return Result.makeFailResult("密码或用户名为空");
@@ -75,10 +76,47 @@ public class UserController {
 		user=this.userService.getUserByDigits(digits.trim());
 		if(user==null||!user.getPassword().equals(encryptPassword)) 
 			return Result.makeFailResult("用户名或密码错误");
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		userService.updateCurrentLoginTimeById(user.getId(),df.format(new Date()));
 		session.setAttribute("currentUser", user);//将登录的用户放进session,方便后面使用
 		resultMap.put("roleFlag",user.getRoleFlag());
 		return Result.makeSuccessResult(resultMap);
 	}
+	/**
+	 * 返回最近登录时间
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getCurrentLoginTime")
+	@ResponseBody
+	public Result getCurrentLoginTime(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		resultMap.put("currentLoginTime",currentUser.getCurrentLoginTime());
+		return Result.makeSuccessResult(resultMap);
+		
+	}
+	/**
+	 * 返回当前用户信息
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getCurrentUser")
+	@ResponseBody
+	public Result getCurrentUser(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		resultMap.put("current", currentUser);
+		return Result.makeSuccessResult(resultMap);
+	}
+	
 	/**
 	 * 密码重置
 	 *  
@@ -89,6 +127,10 @@ public class UserController {
 	@RequestMapping("resetpassword")
 	@ResponseBody
 	public Result resetPassword(String digits,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		String newPassword="000000";
 		String encryptPassword=DESUtils.getEncryptString(newPassword.trim());
 		System.out.println("学号:"+digits+"密码:"+encryptPassword);
@@ -135,6 +177,10 @@ public class UserController {
 	@RequestMapping("saveMemberApplicationInfo")
 	@ResponseBody
 	public Result saveMemberApplicationInfo(MemberApplicateInfo memberApplicateInfo,String departmentName,String jobName,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Department department=departmentService.selectDepartmentByName(departmentName);
 		if(department==null)
 			return Result.makeFailResult("查无该部门，请确认后重新输入");
@@ -203,7 +249,13 @@ public class UserController {
 		if(result==0) 
 			return Result.makeFailResult("审核失败");
 		else {
-			return Result.makeFailResult("审核成功");
+			result=userService.addUserByApplication(idList);
+			if(result==0)
+				return Result.makeFailResult("用户添加发生错误,请联系系统管理员");
+			else if(result!=idList.size())
+				return Result.makeFailResult("部分用户添加出现错误");
+			else
+				return Result.makeFailResult("审核成功");
 		}
 	}
 	
@@ -262,7 +314,7 @@ public class UserController {
 	}
 	
 	/**
-	 * 批量导入接口(未测试)
+	 * 批量导出接口(未测试)
 	 * 
 	 * @param request
 	 * @param model
@@ -304,6 +356,10 @@ public class UserController {
 	@RequestMapping("deleteUser")
 	@ResponseBody
 	public Result deleteUserByDigits(String digits,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		User user = null;
 		//判断学号是否为空
@@ -337,6 +393,10 @@ public class UserController {
 	@RequestMapping("addSingleUser")
 	@ResponseBody
 	public Result addSingleUser(String name,String digits,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		int addResult = 0;
@@ -386,7 +446,12 @@ public class UserController {
 	 */
 	@RequestMapping("updateUserInfoByDigits")
 	@ResponseBody
-	public Result updateUserInfoByDigits(String digits,String name,String department,String major,String belongClass,String grade,String phone,String email) {
+	public Result updateUserInfoByDigits(String digits,String name,String department,String major,
+			String belongClass,String grade,String phone,String email,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		int updateResult = 0;
 		User user = null;
@@ -420,6 +485,10 @@ public class UserController {
 	@RequestMapping("showUsersByPage")
 	@ResponseBody
 	public Result showUsersByPage(String pageNow,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		//加载Page工具
 		Page page = null;
@@ -452,6 +521,24 @@ public class UserController {
 		}
 		resultMap.put("page", page);
 		resultMap.put("usersList", allUsers);
+		return Result.makeSuccessResult(resultMap);
+	}
+	
+	/**
+	 * 获取全部用户信息列表
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getUserList")
+	@ResponseBody
+	public Result getUserList(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		List<User> userList=userService.getUserList();
+		resultMap.put("userList", userList);
 		return Result.makeSuccessResult(resultMap);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ams.department.entity.Department;
 import com.ams.user.entity.User;
 
 public interface UserDao {
@@ -29,18 +30,24 @@ public interface UserDao {
 
 	int updateJobById(@Param("memberId")String memberId, @Param("memberJobId")String memberJobId, @Param("roleFlag")Integer roleFlag);
 
-	void insertUserList(List<User> userList);
+	int insertUserList(List<User> userList);
 
 	List<User> selectListInfo();
 
 	int addSingleUser(User user);
 
-	int updateDelFlagByDigits(String digits, int delFlag);
+	int updateDelFlagByDigits(@Param("digits")String digits, @Param("delFlag")int delFlag);
 
-	int updateUserInfoByDigits(String digits, String name, String department, String major, String belongClass,
-			String grade, String phone, String email);
+	int updateUserInfoByDigits(@Param("digits")String digits, @Param("name")String name, @Param("department")String department, @Param("major")String major, @Param("belongClass")String belongClass,
+			@Param("grade")String grade, @Param("phone")String phone, @Param("email")String email);
 
 	int getUsersCount();
 
-	List<User> getUsersByPage(int startPos, int pageSize);
+	List<User> getUsersByPage(@Param("startPos")int startPos, @Param("pageSize")int pageSize);
+
+	int updateCurrentLoginTimeById(@Param("id")String id, @Param("currentLoginTime")String date);
+
+	List<User> getUserList();
+
+	List<Department> getMemberList(String departmentId);
 }
