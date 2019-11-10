@@ -83,6 +83,20 @@ public class UserController {
 		resultMap.put("roleFlag",user.getRoleFlag());
 		return Result.makeSuccessResult(resultMap);
 	}
+	
+	/**
+	  *  退出登录接口（销毁session）
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("logout")
+	@ResponseBody
+	public Result logout(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		System.out.println("SESSIONID:"+session.getId());
+		session.invalidate();
+		return Result.makeSuccessResult();
+	}
 	/**
 	 * 返回最近登录时间
 	 * @param request
