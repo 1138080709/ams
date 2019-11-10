@@ -68,6 +68,7 @@ public class UserController {
 		Map<String,Object> resultMap=new HashMap<String,Object>();
 		User user=null;
 		HttpSession session=request.getSession();
+		session.setMaxInactiveInterval(15*60);//设置session过期时间，设置单位为秒，设置为-1永不过期
 		System.out.println("SESSIONID:"+session.getId());
 		//System.out.println("学号:"+digits+" "+"密码："+password);
 		if(password==null||digits==null) 
