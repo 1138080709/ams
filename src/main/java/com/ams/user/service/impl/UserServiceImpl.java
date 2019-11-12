@@ -132,7 +132,7 @@ public class UserServiceImpl implements IUserService {
 	
 	public XSSFWorkbook exportExcelInfo() {
 		//根据条件查询数据，把数据装载到一个list中
-		List<User> userInfo=userDao.selectListInfo();//存在问题department和job是一个对象
+		List<User> userInfo=userDao.getUserList();//存在问题department和job是一个对象
 		List<ExcelBean> ems=new ArrayList<>();
 		Map<Integer,List<ExcelBean>> map=new LinkedHashMap<>();
 		List<QuerySaveMemberInfoDTO> member=new ArrayList<QuerySaveMemberInfoDTO>();

@@ -162,18 +162,20 @@ public class FastDFSClient {
 	 * @param localFileName  本地文件名
 	 * @param groupName      文件在FastDFS中的组名
 	 * @param remoteFileName 文件在FastDFS中的名称
+	 * @return 
 	 */
-	public static void deleFile(String localFileName, String groupName, String remoteFileName) {
+	public static int deleFile(String localFileName, String groupName, String remoteFileName) {
+		int i=1;
 		TrackerServer trackerServer;
 		try {
 			trackerServer = trackerClient.getConnection();
 		} catch (IOException e) {
 			log.error("error", e);
-			return;
+			return i;
 		}
 		StorageClient storageClient = new StorageClient(trackerServer, null);
 		try {
-			int i = storageClient.delete_file(groupName, remoteFileName);
+			i = storageClient.delete_file(groupName, remoteFileName);
 			if (i == 0)
 				log.info(localFileName + "文件，删除成功");
 			else
@@ -183,6 +185,7 @@ public class FastDFSClient {
 		} finally {
 			closeTrackerServer(trackerServer);
 		}
+		return i;
 	}
 
 	/**
@@ -194,7 +197,7 @@ public class FastDFSClient {
 	public static String[] separationResult(String result) {
 		String[] arr=null;
 		if(result!=null)
-			arr= result.split("-");
+			arr= result.split("-",2);
 		else
 			System.out.println("传入参数为空");
 		return arr;

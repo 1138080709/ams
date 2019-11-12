@@ -7,11 +7,23 @@ public class File {
 
     private String remoteFileName;
 
-    private String fileName;
+    private String folderName;
 
-    private String path;
-    
-    private String author;
+    private String description;
+
+    private Integer portLevel;
+
+    private String parentId;
+
+    private Integer isDirectory;
+
+    private String updator;
+
+    private String updateTime;
+
+    private String creator;
+
+    private String creatTime;
 
     private Integer delFlag;
 
@@ -39,28 +51,76 @@ public class File {
         this.remoteFileName = remoteFileName == null ? null : remoteFileName.trim();
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFolderName() {
+        return folderName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName == null ? null : fileName.trim();
+    public void setFolderName(String folderName) {
+        this.folderName = folderName == null ? null : folderName.trim();
     }
 
-    public String getPath() {
-        return path;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPath(String path) {
-        this.path = path == null ? null : path.trim();
-    }
-    
-    public String getAuthor() {
-        return author;
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 
-    public void setAuthor(String author) {
-        this.author = author == null ? null : author.trim();
+    public Integer getPortLevel() {
+        return portLevel;
+    }
+
+    public void setPortLevel(Integer portLevel) {
+        this.portLevel = portLevel;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId == null ? null : parentId.trim();
+    }
+
+    public Integer getIsDirectory() {
+        return isDirectory;
+    }
+
+    public void setIsDirectory(Integer isDirectory) {
+        this.isDirectory = isDirectory;
+    }
+
+    public String getUpdator() {
+        return updator;
+    }
+
+    public void setUpdator(String updator) {
+        this.updator = updator == null ? null : updator.trim();
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime == null ? null : updateTime.trim();
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator == null ? null : creator.trim();
+    }
+
+    public String getCreateTime() {
+        return creatTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.creatTime = createTime == null ? null : createTime.trim();
     }
 
     public Integer getDelFlag() {

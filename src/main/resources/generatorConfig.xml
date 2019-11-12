@@ -14,7 +14,7 @@
 		</commentGenerator>
 		<!-- 数据库链接URL，用户名、密码 -->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://120.79.141.171:3306/ams_db" userId="ams_db"
+			connectionURL="jdbc:mysql://localhost:3306/ams_db" userId="root"
 			password="123456" />
 
 		<!-- 生成Model实体类的包名和位置 -->

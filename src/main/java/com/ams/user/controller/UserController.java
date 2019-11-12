@@ -190,7 +190,7 @@ public class UserController {
 	 */
 	@RequestMapping("saveMemberApplicationInfo")
 	@ResponseBody
-	public Result saveMemberApplicationInfo(MemberApplicateInfo memberApplicateInfo,String departmentName,String jobName,HttpServletRequest request) {
+	public Result saveMemberApplicationInfo(MemberApplicateInfo memberApplicateInfo,@RequestParam(value="departmentName")String departmentName,@RequestParam(value="jobName")String jobName,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 

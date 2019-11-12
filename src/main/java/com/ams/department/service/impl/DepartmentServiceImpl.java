@@ -1,6 +1,7 @@
 package com.ams.department.service.impl;
 
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +60,8 @@ public class DepartmentServiceImpl implements IDepartmentService{
 
 	@Override
 	public Department selectDepartmentByName(String departmentName) {
+		if(departmentName!=null)
+			departmentName=departmentName.trim();
 		return this.departmentDao.selectDepartmentByName(departmentName);
 	}
 
