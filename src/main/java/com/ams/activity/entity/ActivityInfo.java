@@ -23,7 +23,7 @@ public class ActivityInfo {
     /**
 	 * 活动负责人id(与用户表关联)
 	 */
-    private String principalId;
+    private String principalName;
     /**
 	 * 活动状态(0-未开始 1-正在进行 2-已结束)
 	 */
@@ -69,15 +69,15 @@ public class ActivityInfo {
         this.overTime = overTime == null ? null : overTime.trim();
     }
 
-    public String getPrincipalId() {
-        return principalId;
-    }
+    public String getPrincipalName() {
+		return principalName;
+	}
 
-    public void setPrincipalId(String principalId) {
-        this.principalId = principalId == null ? null : principalId.trim();
-    }
+	public void setPrincipalName(String principalName) {
+		this.principalName = principalName;
+	}
 
-    public Integer getActivityFlag() {
+	public Integer getActivityFlag() {
         return activityFlag;
     }
 

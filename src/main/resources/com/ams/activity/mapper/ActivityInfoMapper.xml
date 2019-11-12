@@ -4,44 +4,55 @@
 	<resultMap id="BaseResultMap"
 		type="com.ams.activity.entity.ActivityInfo">
 		<id column="Id" property="id" jdbcType="VARCHAR" />
-		<result column="activityTheme" property="activitytheme"
+		<result column="activityTheme" property="activityTheme"
 			jdbcType="VARCHAR" />
-		<result column="startTime" property="starttime"
+		<result column="startTime" property="startTime"
 			jdbcType="VARCHAR" />
-		<result column="overTime" property="overtime"
+		<result column="overTime" property="overTime"
 			jdbcType="VARCHAR" />
-		<result column="principalId" property="principalid"
+		<result column="principalName" property="principalName"
 			jdbcType="VARCHAR" />
-		<result column="activityFlag" property="activityflag"
+		<result column="activityFlag" property="activityFlag"
 			jdbcType="INTEGER" />
-		<result column="detailInfo" property="detailinfo"
+		<result column="detailInfo" property="detailInfo"
 			jdbcType="VARCHAR" />
-		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		Id, activityTheme, startTime, overTime, principalId, activityFlag,
+		Id, activityTheme, startTime, overTime, principalName, activityFlag,
 		detailInfo, delFlag
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
-		parameterType="java.lang.String">
+	<select id="selectByPrimaryKey" resultType="com.ams.activity.entity.ActivityInfo"
+		parameterType="java.lang.String" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from activity_info
 		where Id = #{id,jdbcType=VARCHAR}
+		and delFlag = 0
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from activity_info
-		where Id = #{id,jdbcType=VARCHAR}
-	</delete>
+	<select id="selectAllActivity" resultType="com.ams.activity.entity.ActivityInfo">
+		select *
+		from activity_info
+		where delFlag = 0
+	</select>
+	<update id="deleteByPrimaryKey">
+		update activity_info
+		<set>
+			<if test="id != null">
+				delFlag=#{delFlag,jdbcType=INTEGER}
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
 	<insert id="insert"
 		parameterType="com.ams.activity.entity.ActivityInfo">
 		insert into activity_info (Id, activityTheme, startTime,
-		overTime, principalId, activityFlag,
+		overTime, principalName, activityFlag,
 		detailInfo, delFlag)
-		values (#{id,jdbcType=VARCHAR}, #{activitytheme,jdbcType=VARCHAR},
-		#{starttime,jdbcType=VARCHAR},
-		#{overtime,jdbcType=VARCHAR}, #{principalid,jdbcType=VARCHAR}, #{activityflag,jdbcType=INTEGER},
-		#{detailinfo,jdbcType=VARCHAR}, #{delflag,jdbcType=INTEGER})
+		values (#{id,jdbcType=VARCHAR}, #{activityTheme,jdbcType=VARCHAR},
+		#{startTime,jdbcType=VARCHAR},
+		#{overTime,jdbcType=VARCHAR}, #{principalName,jdbcType=VARCHAR}, #{activityFlag,jdbcType=INTEGER},
+		#{detailInfo,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER})
 	</insert>
 	<insert id="insertSelective"
 		parameterType="com.ams.activity.entity.ActivityInfo">
@@ -59,8 +70,8 @@
 			<if test="overtime != null">
 				overTime,
 			</if>
-			<if test="principalid != null">
-				principalId,
+			<if test="principalname != null">
+				principalName,
 			</if>
 			<if test="activityflag != null">
 				activityFlag,
@@ -85,8 +96,8 @@
 			<if test="overtime != null">
 				#{overtime,jdbcType=VARCHAR},
 			</if>
-			<if test="principalid != null">
-				#{principalid,jdbcType=VARCHAR},
+			<if test="principalname != null">
+				#{principalName,jdbcType=VARCHAR},
 			</if>
 			<if test="activityflag != null">
 				#{activityflag,jdbcType=INTEGER},
@@ -112,8 +123,8 @@
 			<if test="overtime != null">
 				overTime = #{overtime,jdbcType=VARCHAR},
 			</if>
-			<if test="principalid != null">
-				principalId = #{principalid,jdbcType=VARCHAR},
+			<if test="principalname != null">
+				principalName = #{principalName,jdbcType=VARCHAR},
 			</if>
 			<if test="activityflag != null">
 				activityFlag = #{activityflag,jdbcType=INTEGER},
@@ -130,13 +141,13 @@
 	<update id="updateByPrimaryKey"
 		parameterType="com.ams.activity.entity.ActivityInfo">
 		update activity_info
-		set activityTheme = #{activitytheme,jdbcType=VARCHAR},
-		startTime = #{starttime,jdbcType=VARCHAR},
-		overTime = #{overtime,jdbcType=VARCHAR},
-		principalId = #{principalid,jdbcType=VARCHAR},
-		activityFlag = #{activityflag,jdbcType=INTEGER},
-		detailInfo = #{detailinfo,jdbcType=VARCHAR},
-		delFlag = #{delflag,jdbcType=INTEGER}
+		set activityTheme = #{activityTheme,jdbcType=VARCHAR},
+		startTime = #{startTime,jdbcType=VARCHAR},
+		overTime = #{overTime,jdbcType=VARCHAR},
+		principalName = #{principalName,jdbcType=VARCHAR},
+		activityFlag = #{activityFlag,jdbcType=INTEGER},
+		detailInfo = #{detailInfo,jdbcType=VARCHAR},
+		delFlag = #{delFlag,jdbcType=INTEGER}
 		where Id = #{id,jdbcType=VARCHAR}
 	</update>
 </mapper>
