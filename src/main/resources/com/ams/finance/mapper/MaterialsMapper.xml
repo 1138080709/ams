@@ -34,7 +34,6 @@
 			or description like concat("%",#{queryInfo},"%")
 			or createTime like concat("%",#{queryInfo},"%")
 		</if>
-		LIMIT #{offset},#{limit}
 	</select>
 	<insert id="insertSelective"
 		parameterType="com.ams.finance.entity.Materials">

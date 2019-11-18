@@ -95,5 +95,10 @@ public class DepartmentServiceImpl implements IDepartmentService{
 		return this.departmentDao.getDepartmentList();
 	}
 
+	@Override
+	public Integer getDepartmentNumber(String id) {
+		return this.userDao.getDepartmentNumber(id);
+	}
+
 
 }

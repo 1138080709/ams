@@ -45,6 +45,11 @@ public class ActivityInfoServiceImpl implements IActivityInfoService {
 		return this.activityInfoDao.selectAllActivity();
 	}
 
+	@Override
+	public List<ActivityInfo> getHistoryList() {
+		return this.activityInfoDao.getHistoryList();
+	}
+
 	
 	
 }

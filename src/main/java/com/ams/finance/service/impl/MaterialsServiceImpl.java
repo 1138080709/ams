@@ -53,8 +53,8 @@ public class MaterialsServiceImpl implements IMaterialsService{
 	}
 
 	@Override
-	public List<Materials> getMaterialsList(String queryInfo, int offset, int limit) {
-		return this.materialsDao.getMaterialsList(queryInfo,offset,limit);
+	public List<Materials> getMaterialsList(String queryInfo) {
+		return this.materialsDao.getMaterialsList(queryInfo);
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class MaterialsServiceImpl implements IMaterialsService{
 	}
 
 	@Override
-	public List<MaterialFlowInfoDao> getMaterialFlowInfoList(String queryInfo, int offset, int limit) {
-		return this.materialsFlowInfoDao.getMaterialFlowInfoList(queryInfo,offset,limit);
+	public List<MaterialFlowInfoDao> getMaterialFlowInfoList(String queryInfo) {
+		return this.materialsFlowInfoDao.getMaterialFlowInfoList(queryInfo);
 	}
 
 	@Override

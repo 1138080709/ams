@@ -20,6 +20,8 @@ public interface ActivityInfoDao {
     int updateByPrimaryKey(ActivityInfo record);
 
 	List<ActivityInfo> selectAllActivity();
+
+	List<ActivityInfo> getHistoryList();
 	
 	
 }

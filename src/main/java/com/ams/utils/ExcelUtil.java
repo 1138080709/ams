@@ -88,8 +88,10 @@ public class ExcelUtil {
 		String fileType = fileName.substring(fileName.lastIndexOf("."));
 		if (excel2003L.equals(fileType)) {
 			wb = new HSSFWorkbook(inStr); // 2003-
+			System.out.println("2003L:"+fileType);
 		} else if (excel2007U.equals(fileType)) {
 			wb = new XSSFWorkbook(inStr); // 2007+
+			System.out.println("2007L:"+fileType);
 		} else {
 			throw new Exception("解析的文件格式有误！");
 		}

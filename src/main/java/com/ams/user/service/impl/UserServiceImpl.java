@@ -95,8 +95,8 @@ public class UserServiceImpl implements IUserService {
 		return this.userDao.updateById(newInfoUser);
 	}
 
-	public int updateJobById(String memberId, String memberJobId, Integer roleFlag) {
-		return this.userDao.updateJobById(memberId, memberJobId, roleFlag);
+	public int updateJobById(String memberId, Job job) {
+		return this.userDao.updateJobById(memberId,job.getId(),job.getBelongId(),job.getRoleFlag());
 	}
 
 	public void importExcelInfo(InputStream in, MultipartFile file) {
@@ -130,9 +130,9 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	
-	public XSSFWorkbook exportExcelInfo() {
+	public XSSFWorkbook exportExcelInfo(List<String> idList) {
 		//根据条件查询数据，把数据装载到一个list中
-		List<User> userInfo=userDao.getUserList();//存在问题department和job是一个对象
+		List<User> userInfo=userDao.getUserByIdList(idList);
 		List<ExcelBean> ems=new ArrayList<>();
 		Map<Integer,List<ExcelBean>> map=new LinkedHashMap<>();
 		List<QuerySaveMemberInfoDTO> member=new ArrayList<QuerySaveMemberInfoDTO>();
@@ -235,25 +235,30 @@ public class UserServiceImpl implements IUserService {
 		MemberApplicateInfo memberInfo=null;
 		List<User> userList=new ArrayList<User>();
 		for(String id:idList) {
-		memberInfo=memberApplicateInfoDao.selectMemberApplicateInfoById(id);
-		User user=new User();
-		user.setId(IdGen.uuid());
-		user.setName(memberInfo.getName());
-		user.setDigits(memberInfo.getDigits());
-		user.setDepartment(memberInfo.getDepartment());
-		user.setGrade(memberInfo.getGrade());
-		user.setMajor(memberInfo.getMajor());
-		user.setBelongClass(memberInfo.getBelongClass());
-		user.setPhone(memberInfo.getPhone());
-		user.setEmail(memberInfo.getEmail());
-		user.setBelongId(memberInfo.getApplicateSection());
-		user.setJobId(memberInfo.getApplicateJob());
-		Job job=jobDao.getJobById(memberInfo.getApplicateJob());
-		user.setRoleFlag(job.getRoleFlag());
-		user.setCreateTime(df.format(new Date()));
-		userList.add(user);
+			memberInfo=memberApplicateInfoDao.selectMemberApplicateInfoById(id);
+			if(memberInfo==null)
+				continue;
+			User user=new User();
+			user.setId(IdGen.uuid());
+			user.setName(memberInfo.getName());
+			user.setDigits(memberInfo.getDigits());
+			user.setDepartment(memberInfo.getDepartment());
+			user.setGrade(memberInfo.getGrade());
+			user.setMajor(memberInfo.getMajor());
+			user.setBelongClass(memberInfo.getBelongClass());
+			user.setPhone(memberInfo.getPhone());
+			user.setEmail(memberInfo.getEmail());
+			user.setBelongId(memberInfo.getApplicateSection());
+			user.setJobId(memberInfo.getApplicateJob());
+			Job job=jobDao.getJobById(memberInfo.getApplicateJob());
+			user.setRoleFlag(job.getRoleFlag());
+			user.setCreateTime(df.format(new Date()));
+			userList.add(user);
 		}
-		return this.userDao.insertUserList(userList);
+		if(userList.size()==0)
+			return 0;
+		else
+			return this.userDao.insertUserList(userList);
 	}
 
 	@Override
@@ -268,7 +273,17 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public List<Department> getMemberList(String departmentId) {
-		return this.userDao.getMemberList(departmentId);
+	public int updateRoleFlagById(String memberId, Integer roleFlag) {
+		return this.userDao.updateRoleFlagById(memberId,roleFlag);
+	}
+
+	@Override
+	public List<User> getMemberList() {
+		return this.userDao.getMemberList();
+	}
+
+	@Override
+	public List<User> getMemberListByDepartmentId(String departmentId) {
+		return this.userDao.getMemberListByDepartmentId(departmentId);
 	}
 }

@@ -16,11 +16,11 @@ public interface IMaterialsService {
 
 	int getMaterialsCount();
 
-	List<Materials> getMaterialsList(String queryInfo, int offset, int limit);
+	List<Materials> getMaterialsList(String queryInfo);
 
 	int getMaterialsFlowInfoCount();
 
-	List<MaterialFlowInfoDao> getMaterialFlowInfoList(String queryInfo, int offset, int limit);
+	List<MaterialFlowInfoDao> getMaterialFlowInfoList(String queryInfo);
 
 	int addMaterialFlowInfo(MaterialFlowInfo materialFlowInfo, String id);
 

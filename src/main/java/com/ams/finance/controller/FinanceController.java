@@ -1,6 +1,5 @@
 package com.ams.finance.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -374,6 +373,27 @@ public class FinanceController {
 	}
 	
 	
+//	/**
+//	 * 查看当前物资情况
+//	 * 
+//	 * @param request
+//	 * @return
+//	 */
+//	@RequestMapping("showMaterial")
+//	@ResponseBody
+//	public Result showMaterial(String queryInfo,int offset,int limit,HttpServletRequest request) {
+//		HttpSession session=request.getSession();
+//		User currentUser=(User)session.getAttribute("currentUser");
+//		if(currentUser==null) 
+//			return Result.makeFailResult("用户登录已失效,请重新登录");
+//		Map<String,Object> resultMap=new HashMap<String,Object>();
+//		List<Materials> infoList=materialsService.getMaterialsList(queryInfo,offset,limit);
+//		int total=materialsService.getMaterialsCount();
+//		resultMap.put("infoList", infoList);
+//		resultMap.put("total", total);
+//		return Result.makeSuccessResult(resultMap);
+//	}
+	
 	/**
 	 * 查看当前物资情况
 	 * 
@@ -382,37 +402,59 @@ public class FinanceController {
 	 */
 	@RequestMapping("showMaterial")
 	@ResponseBody
-	public Result showMaterial(String queryInfo,int offset,int limit,HttpServletRequest request) {
+	public Result showMaterial(String queryInfo,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap=new HashMap<String,Object>();
-		List<Materials> infoList=materialsService.getMaterialsList(queryInfo,offset,limit);
+		List<Materials> infoList=materialsService.getMaterialsList(queryInfo);
 		int total=materialsService.getMaterialsCount();
 		resultMap.put("infoList", infoList);
 		resultMap.put("total", total);
 		return Result.makeSuccessResult(resultMap);
 	}
 	
+//	/**
+//	 * 查看借还信息记录
+//	 * 
+//	 * @param queryInfo
+//	 * @param offset
+//	 * @param limit
+//	 * @param request
+//	 * @return
+//	 */
+//	@RequestMapping("checkLoanStatus")
+//	@ResponseBody
+//	public Result checkLoanStatus(String queryInfo,int offset,int limit,HttpServletRequest request) {
+//		HttpSession session=request.getSession();
+//		User currentUser=(User)session.getAttribute("currentUser");
+//		if(currentUser==null) 
+//			return Result.makeFailResult("用户登录已失效,请重新登录");
+//		Map<String,Object> resultMap=new HashMap<String,Object>();
+//		List<MaterialFlowInfoDao> infoList=materialsService.getMaterialFlowInfoList(queryInfo,offset,limit);
+//		int total=materialsService.getMaterialsFlowInfoCount();
+//		resultMap.put("infoList", infoList);
+//		resultMap.put("total", total);
+//		return Result.makeSuccessResult(resultMap);
+//	}
+	
 	/**
 	 * 查看借还信息记录
 	 * 
 	 * @param queryInfo
-	 * @param offset
-	 * @param limit
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("checkLoanStatus")
 	@ResponseBody
-	public Result checkLoanStatus(String queryInfo,int offset,int limit,HttpServletRequest request) {
+	public Result checkLoanStatus(String queryInfo,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap=new HashMap<String,Object>();
-		List<MaterialFlowInfoDao> infoList=materialsService.getMaterialFlowInfoList(queryInfo,offset,limit);
+		List<MaterialFlowInfoDao> infoList=materialsService.getMaterialFlowInfoList(queryInfo);
 		int total=materialsService.getMaterialsFlowInfoCount();
 		resultMap.put("infoList", infoList);
 		resultMap.put("total", total);

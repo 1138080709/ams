@@ -46,7 +46,6 @@
 			or principalPhone like concat("%",#{queryInfo},"%")
 			or remarks like concat("%",#{queryInfo},"%")
 		</if>
-		LIMIT #{offset},#{limit}
 	</select>
 		<insert id="insertSelective"
 		parameterType="com.ams.finance.entity.MaterialFlowInfo">

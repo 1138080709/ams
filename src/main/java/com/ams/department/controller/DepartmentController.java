@@ -120,6 +120,29 @@ public class DepartmentController {
 	}
 	
 	/**
+	 * 根据部门ID返回部门人数
+	 * @param id
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getDepartmentNumber")
+	@ResponseBody
+	public Result getDepartmentNumber(String id,HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Integer count=departmentService.getDepartmentNumber(id);
+		if(count==null)
+			return Result.makeFailResult("部门id错误");
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		resultMap.put("memberNumber", count);
+		return Result.makeSuccessResult(resultMap);
+		
+		
+	}
+	
+	/**
 	 * 创建部门接口
 	 * 
 	 * @param department
@@ -338,7 +361,7 @@ public class DepartmentController {
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String,Object> resultMap=new HashMap<String,Object>();
-		List<Department> memberList=userService.getMemberList(departmentId);
+		List<User> memberList=userService.getMemberListByDepartmentId(departmentId);
 		resultMap.put("memberList", memberList);
 		return Result.makeSuccessResult(resultMap);
 	}
@@ -388,7 +411,9 @@ public class DepartmentController {
 		if(orderUser==null) 
 			return Result.makeFailResult("找不到当前修改的成员");
 		Job orderJob=jobService.getJobById(memberJobId);
-		int result=userService.updateJobById(memberId,memberJobId,orderJob.getRoleFlag());
+		if(orderJob==null)
+			return Result.makeFailResult("找不到该职位");
+		int result=userService.updateJobById(memberId,orderJob);
 		if(result==0)
 			return Result.makeFailResult("信息修改失败");
 		else 
@@ -416,7 +441,7 @@ public class DepartmentController {
 		int result=0;
 		if(roleFlag==null)
 			return Result.makeFailResult("信息修改失败");
-		result=userService.updateJobById(memberId,null,roleFlag);
+		result=userService.updateRoleFlagById(memberId,roleFlag);
 		if(result==0) 
 			return Result.makeFailResult("信息修改失败");
 		else 

@@ -70,16 +70,21 @@
 		</if>
 		limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
 	</select>
-	<select id="getMemberList"
-		resultType="com.ams.user.entity.User">
+	<select id="getMemberList" resultType="com.ams.user.entity.User">
 		select
 		<include refid="Base_Column_List"></include>
 		from user
 		where delFlag=0
-		and belongId=#{departmentId}
+		and roleFlag=-1
 	</select>
-	<select id="getUserList"
-		resultType="com.ams.user.entity.User">
+	<select id="getMemberListByDepartmentId" resultType="com.ams.user.entity.User">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
+		and belongId=#{departmentId,jdbcType=VARCHAR}
+	</select>
+	<select id="getUserList" resultType="com.ams.user.entity.User">
 		select
 		<include refid="Base_Column_List"></include>
 		from user
@@ -93,17 +98,37 @@
 		and
 		belongId=#{departmentId,jdbcType=VARCHAR}
 	</select>
-	<select id="getUsersCount" resultType="java.lang.Integer" >
+	<select id="getUsersCount" resultType="java.lang.Integer">
 		select count(*)
 		from user
-		where delFlag=0		
+		where delFlag=0
 	</select>
 	<select id="getUsersByPage" parameterType="java.lang.Integer"
 		resultType="com.ams.user.entity.User">
 		select *
 		from user
 		where delFlag=0
-		limit #{startPos,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+		limit
+		#{startPos,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getDepartmentNumber" resultType="java.lang.Integer">
+		select count(*)
+		from user
+		where delFlag=0
+		and belongId=#{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getUserByIdList" parameterType="java.util.List"
+		resultType="com.ams.user.entity.User">
+		select
+		<include refid="Base_Column_List"></include>
+		from user
+		where delFlag=0
+		and Id in
+		<foreach collection="list" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+
 	</select>
 	<update id="updatePasswordByDigits">
 		update user
@@ -151,8 +176,21 @@
 			<if test="memberJobId!=null and memberJobId!=''">
 				jobId=#{memberJobId,jdbcType=VARCHAR},
 			</if>
+			<if test="departmentId!=null and departmentId!=''">
+				belongId=#{departmentId,jdbcType=VARCHAR},
+			</if>
 			<if test="roleFlag!=null and roleFlag!=''">
-				roleFlag=#{roleFlag,jdbcType=VARCHAR}
+				roleFlag=#{roleFlag,jdbcType=INTEGER}
+			</if>
+		</set>
+		where Id=#{memberId,jdbcType=VARCHAR}
+		and delFlag=0
+	</update>
+	<update id="updateRoleFlagById">
+		update user
+		<set>
+			<if test="roleFlag!=null and roleFlag!=''">
+				roleFlag=#{roleFlag,jdbcType=INTEGER}
 			</if>
 		</set>
 		where Id=#{memberId,jdbcType=VARCHAR}
@@ -178,7 +216,8 @@
 		where digits=#{digits,jdbcType=VARCHAR}
 		and delFlag = 0
 	</update>
-	<update id="updateUserInfoByDigits" parameterType="java.lang.String">
+	<update id="updateUserInfoByDigits"
+		parameterType="java.lang.String">
 		update user
 		<set>
 			<if test="name != null and name != ''">
@@ -203,117 +242,35 @@
 				email=#{email,jdbcType=VARCHAR},
 			</if>
 		</set>
-		where digits=#{digits,jdbcType=VARCHAR} 
+		where digits=#{digits,jdbcType=VARCHAR}
 		and delFlag=0
 	</update>
-	<insert id="addSingleUser" parameterType="com.ams.user.entity.User">
+	<insert id="addSingleUser"
+		parameterType="com.ams.user.entity.User">
 		insert into user (Id,name,digits,createTime,roleFlag)
 		values
 		(#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{digits,jdbcType=VARCHAR},
 		#{createTime,jdbcType=VARCHAR},#{roleFlag,jdbcType=INTEGER})
 	</insert>
 	<insert id="insertUserList" parameterType="java.util.List">
-		insert into user
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				Id,
-			</if>
-			<if test="name != null">
-				name,
-			</if>
-			<if test="digits != null">
-				digits,
-			</if>
-			<if test="department != null">
-				department,
-			</if>
-			<if test="major != null">
-				major,
-			</if>
-			<if test="belongclass != null">
-				belongClass,
-			</if>
-			<if test="grade != null">
-				grade,
-			</if>
-			<if test="password != null">
-				password,
-			</if>
-			<if test="phone != null">
-				phone,
-			</if>
-			<if test="email != null">
-				email,
-			</if>
-			<if test="jobid != null">
-				jobId,
-			</if>
-			<if test="belongid != null">
-				belongId,
-			</if>
-			<if test="roleflag != null">
-				roleFlag,
-			</if>
-			<if test="financeflag != null">
-				financeFlag,
-			</if>
-			<if test="createtime != null">
-				createTime,
-			</if>
-			<if test="delflag != null">
-				delFlag,
-			</if>
-		</trim>
-		<foreach collection="list" item="item" index="index" separator=",">
-			<trim prefix="values (" suffix=")" suffixOverrides=",">
-				<if test="id != null">
-					#{item.id,jdbcType=VARCHAR},
-				</if>
-				<if test="name != null">
-					#{item.name,jdbcType=VARCHAR},
-				</if>
-				<if test="digits != null">
-					#{item.digits,jdbcType=VARCHAR},
-				</if>
-				<if test="department != null">
-					#{item.department,jdbcType=VARCHAR},
-				</if>
-				<if test="major != null">
-					#{item.major,jdbcType=VARCHAR},
-				</if>
-				<if test="belongclass != null">
-					#{item.belongclass,jdbcType=VARCHAR},
-				</if>
-				<if test="grade != null">
-					#{item.grade,jdbcType=VARCHAR},
-				</if>
-				<if test="password != null">
-					#{item.password,jdbcType=VARCHAR},
-				</if>
-				<if test="phone != null">
-					#{item.phone,jdbcType=VARCHAR},
-				</if>
-				<if test="email != null">
-					#{item.email,jdbcType=VARCHAR},
-				</if>
-				<if test="jobid != null">
-					#{item.jobid,jdbcType=VARCHAR},
-				</if>
-				<if test="belongid != null">
-					#{item.belongid,jdbcType=VARCHAR},
-				</if>
-				<if test="roleflag != null">
-					#{item.roleflag,jdbcType=INTEGER},
-				</if>
-				<if test="financeflag != null">
-					#{item.financeflag,jdbcType=INTEGER},
-				</if>
-				<if test="createtime != null">
-					#{item.createtime,jdbcType=VARCHAR},
-				</if>
-				<if test="delflag != null">
-					#{item.delflag,jdbcType=INTEGER},
-				</if>
+		insert into user(Id,name,digits,department,major,belongClass,grade,password,phone,email,roleFlag,financeFlag,createTime)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id,jdbcType=VARCHAR},
+				#{item.name,jdbcType=VARCHAR},
+				#{item.digits,jdbcType=VARCHAR},
+				#{item.department,jdbcType=VARCHAR},
+				#{item.major,jdbcType=VARCHAR},
+				#{item.belongClass,jdbcType=VARCHAR},
+				#{item.grade,jdbcType=VARCHAR},
+				#{item.password,jdbcType=VARCHAR},
+				#{item.phone,jdbcType=VARCHAR},
+				#{item.email,jdbcType=VARCHAR},
+				#{item.roleFlag,jdbcType=INTEGER},
+				#{item.financeFlag,jdbcType=INTEGER},
+				#{item.createTime,jdbcType=VARCHAR},
 			</trim>
 		</foreach>
 	</insert>

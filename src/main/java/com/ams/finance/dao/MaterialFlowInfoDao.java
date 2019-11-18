@@ -25,5 +25,5 @@ public interface MaterialFlowInfoDao {
 
 	int getMaterialsFlowInfoCount();
 
-	List<MaterialFlowInfoDao> getMaterialFlowInfoList(@Param("queryInfo")String queryInfo, @Param("offset")int offset, @Param("limit")int limit);
+	List<MaterialFlowInfoDao> getMaterialFlowInfoList(@Param("queryInfo")String queryInfo);
 }

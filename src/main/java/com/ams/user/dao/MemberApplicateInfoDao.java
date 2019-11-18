@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ams.user.dto.MemberApplicateInfoDTO;
 import com.ams.user.entity.MemberApplicateInfo;
 
 public interface MemberApplicateInfoDao {
 
-	List<MemberApplicateInfo> getAllApplicateInfoList(@Param("queryInfo")String queryInfo, @Param("offset")int offset, @Param("limit")int limit);
+	List<MemberApplicateInfoDTO> getAllApplicateInfoList();
 
 	int getAllApplicateCount();
 
@@ -22,5 +23,5 @@ public interface MemberApplicateInfoDao {
 	
 	MemberApplicateInfo selectMemberApplicateInfoById(String id);
 
-	MemberApplicateInfo getInfoById(String memberApplicateInfoId);
+	MemberApplicateInfo getInfoById(String id);
 }

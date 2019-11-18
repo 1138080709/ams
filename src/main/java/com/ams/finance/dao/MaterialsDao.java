@@ -27,7 +27,7 @@ public interface MaterialsDao {
 
 	int getMaterialsCount();
 
-	List<Materials> getMaterialsList(@Param("queryInfo")String queryInfo, @Param("offset")int offset, @Param("limit")int limit);
+	List<Materials> getMaterialsList(@Param("queryInfo")String queryInfo);
 
 	int updateMaterialsDelFlag(List<String> idList);
 }

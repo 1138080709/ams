@@ -129,9 +129,14 @@ public class FileServiceImpl implements IFileService{
 		for(File file:allFiles) {
 			if(file.getDescription()==null||file.getDescription().equals(""))
 				continue;
-			if(KMP(keyword,file.getDescription())==false)
+			if(KMP(keyword,file.getFolderName())==true) {
+				files.add(file);
 				continue;
-			files.add(file);
+			}
+			if(KMP(keyword,file.getDescription())==true) {
+				files.add(file);
+				continue;
+			}
 		}
 		return files;
 	}

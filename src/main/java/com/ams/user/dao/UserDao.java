@@ -28,7 +28,7 @@ public interface UserDao {
 
     int updateById(User newInfoUser);
 
-	int updateJobById(@Param("memberId")String memberId, @Param("memberJobId")String memberJobId, @Param("roleFlag")Integer roleFlag);
+	int updateJobById(@Param("memberId")String memberId, @Param("memberJobId")String memberJobId, @Param("departmentId")String departmentId, @Param("roleFlag")Integer roleFlag);
 
 	int insertUserList(List<User> userList);
 
@@ -49,5 +49,13 @@ public interface UserDao {
 
 	List<User> getUserList();
 
-	List<Department> getMemberList(String departmentId);
+	List<User> getMemberList();
+
+	List<User> getUserByIdList(List<String> idList);
+
+	Integer getDepartmentNumber(String id);
+
+	int updateRoleFlagById(@Param("memberId")String memberId, @Param("roleFlag")Integer roleFlag);
+
+	List<User> getMemberListByDepartmentId(String departmentId);
 }

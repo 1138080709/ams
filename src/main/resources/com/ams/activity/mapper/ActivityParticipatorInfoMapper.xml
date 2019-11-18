@@ -5,69 +5,62 @@
 	<resultMap id="BaseResultMap"
 		type="com.ams.activity.entity.ActivityParticipatorInfo">
 		<id column="Id" property="id" jdbcType="VARCHAR" />
-		<result column="participatorName" property="participatorname"
+		<result column="participatorName" property="participatorName"
 			jdbcType="VARCHAR" />
 		<result column="participatorDigits"
-			property="participatordigits" jdbcType="VARCHAR" />
+			property="participatorDigits" jdbcType="VARCHAR" />
 		<result column="participatorDepartment"
-			property="participatordepartment" jdbcType="VARCHAR" />
-		<result column="participatorClass" property="participatorclass"
+			property="participatorDepartment" jdbcType="VARCHAR" />
+		<result column="participatorClass" property="participatorClass"
 			jdbcType="VARCHAR" />
-		<result column="activityId" property="activityid"
+		<result column="activityId" property="activityId"
 			jdbcType="VARCHAR" />
-		<result column="delFlag" property="delflag" jdbcType="INTEGER" />
+		<result column="delFlag" property="delFlag" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		Id, participatorName, participatorDigits, participatorDepartment,
 		participatorClass,
 		activityId, delFlag
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
-		parameterType="java.lang.String">
+	<select id="duplicateChecking" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from activity_participator_info
-		where Id = #{id,jdbcType=VARCHAR}
+		where delFlag=0
+		and participatorDigits=#{digits,jdbcType=VARCHAR}
+		and activityId=#{activityId,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from activity_participator_info
-		where Id = #{id,jdbcType=VARCHAR}
-	</delete>
+	<select id="getApplyListById" resultMap="BaseResultMap">
+		select
+			<include refid="Base_Column_List" />
+			from activity_participator_info
+			where delFlag=0
+			and activityId=#{id,jdbcType=VARCHAR}
+	</select>
+	
 	<insert id="insert"
-		parameterType="com.ams.activity.entity.ActivityParticipatorInfo">
-		insert into activity_participator_info (Id, participatorName,
-		participatorDigits,
-		participatorDepartment, participatorClass,
-		activityId, delFlag)
-		values (#{id,jdbcType=VARCHAR}, #{participatorname,jdbcType=VARCHAR},
-		#{participatordigits,jdbcType=VARCHAR},
-		#{participatordepartment,jdbcType=VARCHAR},
-		#{participatorclass,jdbcType=VARCHAR},
-		#{activityid,jdbcType=VARCHAR}, #{delflag,jdbcType=INTEGER})
-	</insert>
-	<insert id="insertSelective"
 		parameterType="com.ams.activity.entity.ActivityParticipatorInfo">
 		insert into activity_participator_info
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="id != null">
 				Id,
 			</if>
-			<if test="participatorname != null">
+			<if test="participatorName != null">
 				participatorName,
 			</if>
-			<if test="participatordigits != null">
+			<if test="participatorDigits != null">
 				participatorDigits,
 			</if>
-			<if test="participatordepartment != null">
+			<if test="participatorDepartment != null">
 				participatorDepartment,
 			</if>
-			<if test="participatorclass != null">
+			<if test="participatorClass != null">
 				participatorClass,
 			</if>
-			<if test="activityid != null">
+			<if test="activityId != null">
 				activityId,
 			</if>
-			<if test="delflag != null">
+			<if test="delFlag != null">
 				delFlag,
 			</if>
 		</trim>
@@ -75,60 +68,24 @@
 			<if test="id != null">
 				#{id,jdbcType=VARCHAR},
 			</if>
-			<if test="participatorname != null">
-				#{participatorname,jdbcType=VARCHAR},
+			<if test="participatorName != null">
+				#{participatorName,jdbcType=VARCHAR},
 			</if>
-			<if test="participatordigits != null">
-				#{participatordigits,jdbcType=VARCHAR},
+			<if test="participatorDigits != null">
+				#{participatorDigits,jdbcType=VARCHAR},
 			</if>
-			<if test="participatordepartment != null">
-				#{participatordepartment,jdbcType=VARCHAR},
+			<if test="participatorDepartment != null">
+				#{participatorDepartment,jdbcType=VARCHAR},
 			</if>
-			<if test="participatorclass != null">
-				#{participatorclass,jdbcType=VARCHAR},
+			<if test="participatorClass != null">
+				#{participatorClass,jdbcType=VARCHAR},
 			</if>
-			<if test="activityid != null">
-				#{activityid,jdbcType=VARCHAR},
+			<if test="activityId != null">
+				#{activityId,jdbcType=VARCHAR},
 			</if>
-			<if test="delflag != null">
-				#{delflag,jdbcType=INTEGER},
+			<if test="delFlag != null">
+				#{delFlag,jdbcType=INTEGER},
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective"
-		parameterType="com.ams.activity.entity.ActivityParticipatorInfo">
-		update activity_participator_info
-		<set>
-			<if test="participatorname != null">
-				participatorName = #{participatorname,jdbcType=VARCHAR},
-			</if>
-			<if test="participatordigits != null">
-				participatorDigits = #{participatordigits,jdbcType=VARCHAR},
-			</if>
-			<if test="participatordepartment != null">
-				participatorDepartment = #{participatordepartment,jdbcType=VARCHAR},
-			</if>
-			<if test="participatorclass != null">
-				participatorClass = #{participatorclass,jdbcType=VARCHAR},
-			</if>
-			<if test="activityid != null">
-				activityId = #{activityid,jdbcType=VARCHAR},
-			</if>
-			<if test="delflag != null">
-				delFlag = #{delflag,jdbcType=INTEGER},
-			</if>
-		</set>
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
-	<update id="updateByPrimaryKey"
-		parameterType="com.ams.activity.entity.ActivityParticipatorInfo">
-		update activity_participator_info
-		set participatorName = #{participatorname,jdbcType=VARCHAR},
-		participatorDigits = #{participatordigits,jdbcType=VARCHAR},
-		participatorDepartment = #{participatordepartment,jdbcType=VARCHAR},
-		participatorClass = #{participatorclass,jdbcType=VARCHAR},
-		activityId = #{activityid,jdbcType=VARCHAR},
-		delFlag = #{delflag,jdbcType=INTEGER}
-		where Id = #{id,jdbcType=VARCHAR}
-	</update>
 </mapper>

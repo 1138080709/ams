@@ -11,8 +11,8 @@ public class FileUtils {
 	 * @return originFileNmae 文件名
 	 */
 	public static String getOriginFileName(String fileName) {
-		int index=fileName.lastIndexOf('/');
-		String originFileName=fileName.substring(index+1);
+		int index=fileName.lastIndexOf('.');
+		String originFileName=fileName.substring(0,index);
 		return originFileName;
 	}
 	
@@ -71,8 +71,8 @@ public class FileUtils {
 	}
 	
 	public static void main(String[] args) {
-		String fileName="实践部/吴伟铨/帅哥.docx";
-		String result=getCatalog(fileName);
+		String fileName="帅哥.docx";
+		String result=getOriginFileName(fileName);
 		System.out.println(result);
 	}
 }

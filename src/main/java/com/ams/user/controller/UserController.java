@@ -1,9 +1,10 @@
-package com.ams.user.controller;
+	package com.ams.user.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +31,7 @@ import com.ams.department.entity.Department;
 import com.ams.department.entity.Job;
 import com.ams.department.service.IDepartmentService;
 import com.ams.department.service.IJobService;
+import com.ams.user.dto.MemberApplicateInfoDTO;
 import com.ams.user.entity.MemberApplicateInfo;
 import com.ams.user.entity.User;
 import com.ams.user.service.IMemberApplicateInfoService;
@@ -222,25 +224,15 @@ public class UserController {
 	 */
 	@RequestMapping("getMemberApplicationInfo")
 	@ResponseBody
-	public Result getMemberApplicationInfo(String queryInfo,int offset,int limit,HttpServletRequest request) {
+	public Result getMemberApplicationInfo(HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		List<MemberApplicateInfo> applicateInfo = null;
-		applicateInfo = memberApplicateInfoService.getAllApplicateInfoList(queryInfo, offset, limit); 
-		int total = 0;
-		total = memberApplicateInfoService.getAllApplicateCount();
-		/*测试代码
-		int i=1;
-		for(QuerySaveDepartmentInfoDTO department:departments) {
-			System.out.println(i+":"+department.getDepartmentName());
-		}
-		System.out.println("总数为:"+total);
-		*/
+		List<MemberApplicateInfoDTO> applicateInfo = null;
+		applicateInfo = memberApplicateInfoService.getAllApplicateInfoList(); 
 		resultMap.put("applicateInfo", applicateInfo);
-		resultMap.put("total", total);
 		return Result.makeSuccessResult(resultMap);
 	}
 	
@@ -253,23 +245,23 @@ public class UserController {
 	 */
 	@RequestMapping("updateApplicationSuccessStatus")
 	@ResponseBody
-	public Result updateApplicationSuccessStatus(String ids,HttpServletRequest request) {
+	public Result updateApplicationSuccessStatus(String[] ids,HttpServletRequest request) {
 		HttpSession session=request.getSession();
 		User currentUser=(User)session.getAttribute("currentUser");
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		List<String> idList=Arrays.asList(ids);
-		int result=memberApplicateInfoService.updateApplicateSuccessStatus(idList);
-		if(result==0) 
+		List<String> errorId=memberApplicateInfoService.updateApplicateSuccessStatus(idList);
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		resultMap.put("errorId",errorId);
+		if(errorId.size()!=0) 
 			return Result.makeFailResult("审核失败");
 		else {
-			result=userService.addUserByApplication(idList);
+			int result=userService.addUserByApplication(idList);
 			if(result==0)
 				return Result.makeFailResult("用户添加发生错误,请联系系统管理员");
-			else if(result!=idList.size())
-				return Result.makeFailResult("部分用户添加出现错误");
 			else
-				return Result.makeFailResult("审核成功");
+				return Result.makeSuccessResult(resultMap);
 		}
 	}
 	
@@ -288,19 +280,17 @@ public class UserController {
 		if(currentUser==null) 
 			return Result.makeFailResult("用户登录已失效,请重新登录");
 		List<String> idList=Arrays.asList(ids);
-	/**	for(int i=0;i<id.length;i++)
-			System.out.println(id[i]);
-		for(String d:idList)
-			System.out.println(d);**/
-		int result=memberApplicateInfoService.updateApplicateFailStatus(idList);
-		if(result==0) 
+		List<String> errorId=memberApplicateInfoService.updateApplicateFailStatus(idList);
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		resultMap.put("errorId",errorId);
+		if(errorId.size()!=0) 
 			return Result.makeFailResult("审核失败");
 		else 
-			return Result.makeSuccessResult("审核成功");
+			return Result.makeSuccessResult(resultMap);
 	}
 	
 	/**
-	 * 批量导入接口(未测试)
+	 * 批量导入接口
 	 * 
 	 * @param request
 	 * @param model
@@ -328,26 +318,29 @@ public class UserController {
 	}
 	
 	/**
-	 * 批量导出接口(未测试)
+	 * 批量导出接口
 	 * 
 	 * @param request
 	 * @param model
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping("exports")
 	@ResponseBody
-	public void exports(HttpServletRequest request,HttpServletResponse response) {
+	public void exports(String[] ids,HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
+		String fileName="学生信息表";
 		response.reset();
 		//指定下载的文件名，浏览器都会使用本地编码，即GBK，浏览器收到这个文件名后，用ISO-8859-1来解码，然后用GBK来显示
 		//所以我们用GBK解码，用ISO-8859-1来编码，在浏览器那边会返过来执行
-		//response.setHeader("Content-Disposition","attachment;filename="+new String(userDate.getBytes("GBK"),"ISO-8859-1"));
+		response.setHeader("Content-Disposition","attachment;filename="+new String(fileName.getBytes("GBK"),"ISO-8859-1")+".xlsx");
 		response.setContentType("application/vnd.ms-excel;charset=UTF-8");
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-Control", "no-cache");
 		response.setDateHeader("Expires",0);
 		XSSFWorkbook workbook=null;
+		List<String> idList=Arrays.asList(ids);
 		//导出Excel对象
-		workbook=userService.exportExcelInfo();
+		workbook=userService.exportExcelInfo(idList);
 		OutputStream output;
 		try {
 			output=response.getOutputStream();
@@ -554,5 +547,19 @@ public class UserController {
 		List<User> userList=userService.getUserList();
 		resultMap.put("userList", userList);
 		return Result.makeSuccessResult(resultMap);
+	}
+	
+	@RequestMapping("getMemberList")
+	@ResponseBody
+	public Result getMemberList(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		User currentUser=(User)session.getAttribute("currentUser");
+		if(currentUser==null) 
+			return Result.makeFailResult("用户登录已失效,请重新登录");
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		List<User> userList=userService.getMemberList();
+		resultMap.put("userList", userList);
+		return Result.makeSuccessResult(resultMap);
+	
 	}
 }

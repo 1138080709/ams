@@ -7,15 +7,10 @@ import org.apache.ibatis.annotations.Param;
 import com.ams.activity.entity.ActivityParticipatorInfo;
 
 public interface ActivityParticipatorInfoDao {
-    int deleteByPrimaryKey(String id);
 
-    int insert(ActivityParticipatorInfo record);
+	ActivityParticipatorInfo duplicateChecking(@Param("digits")String digits, @Param("activityId")String activityId);
 
-    int insertSelective(ActivityParticipatorInfo record);
+	int insert(ActivityParticipatorInfo activityParticipatorInfo);
 
-    ActivityParticipatorInfo selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(ActivityParticipatorInfo record);
-
-    int updateByPrimaryKey(ActivityParticipatorInfo record);
+	List<ActivityParticipatorInfo> getApplyListById(String id);
 }

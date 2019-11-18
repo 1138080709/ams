@@ -53,6 +53,7 @@ public class JobServiceImpl implements IJobService{
 		String createTime=df.format(new Date());
 		job.setId(jobId);
 		job.setCreateTime(createTime);
+		System.out.println(job.getJobName());
 		return this.jobDao.insert(job);
 	}
 

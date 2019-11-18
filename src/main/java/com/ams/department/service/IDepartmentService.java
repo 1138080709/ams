@@ -32,4 +32,6 @@ public interface IDepartmentService {
 	public int updateInfoById(Department department, User ministerUser);
 
 	public List<Department> getDepartmentList();
+
+	public Integer getDepartmentNumber(String id);
 }

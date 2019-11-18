@@ -34,7 +34,7 @@
 		<include refid="Base_Column_List" />
 		from member_applicate_info
 		where delFlag=0
-		and applicateFlag=2
+		and applicateFlag=1
 		and Id=#{id,jdbcType=VARCHAR}
 	</select>
 	<select id="getInfoById" resultMap="BaseResultMap"
@@ -43,6 +43,7 @@
 		<include refid="Base_Column_List" />
 		from member_applicate_info
 		where delFlag=0
+		and Id=#{id,jdbcType=VARCHAR}
 		</select>
 	<select id="getMemberApplicateInfoByDigit" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
@@ -52,28 +53,16 @@
 		where delFlag=0
 		and digits = #{digits,jdbcType=VARCHAR}
 	</select>
-	<select id="getAllApplicateCount" resultType="java.lang.Integer">
-		select count(*)
-		from member_applicate_info
-		where delFlag=0
-	</select>
 	<select id="getAllApplicateInfoList"
-		resultType="com.ams.user.entity.MemberApplicateInfo">
+		resultType="com.ams.user.dto.MemberApplicateInfoDTO">
 		select
-		<include refid="Base_Column_List"></include>
-		from member_applicate_info
-		where delFlag=0
-		<if test="queryInfo != null and queryInfo != ''">
-			and name like concat(#{queryInfo},"%")
-			or digits like concat(#{queryInfo},"%")
-			or major like concat(#{queryInfo},"%")
-			or belongClass like concat(#{queryInfo},"%")
-			or grade like concat(#{queryInfo},"%")
-			or applicateSection like concat(#{queryInfo},"%")
-			or applicateJob like concat(#{queryInfo},"%")
-			or applicateTime like concat(#{queryInfo},"%")
-		</if>
-		limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+		s.Id, s.name, s.digits, s.department, s.major, s.belongClass, s.grade, s.phone, s.email,
+		d.departmentName,
+		j.jobName, s.applicateFlag, s.applicateTime
+		from member_applicate_info as s,job as j,department as d
+		where s.delFlag=0
+		and s.applicateSection=d.Id
+		and s.applicateJob=j.Id
 	</select>
 	<update id="updateApplicateSuccessStatus" parameterType="java.util.List">
 		update member_applicate_info

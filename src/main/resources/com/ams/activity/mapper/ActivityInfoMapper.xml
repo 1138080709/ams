@@ -35,6 +35,13 @@
 		from activity_info
 		where delFlag = 0
 	</select>
+	<select id="getHistoryList" resultType="com.ams.activity.entity.ActivityInfo">
+		select
+		<include refid="Base_Column_List" />
+		from activity_info
+		Where delFlag = 0
+		and activityFlag=2
+	</select>
 	<update id="deleteByPrimaryKey">
 		update activity_info
 		<set>

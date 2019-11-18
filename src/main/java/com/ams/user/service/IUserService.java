@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ams.department.dto.QuerySaveMemberInfoDTO;
 import com.ams.department.entity.Department;
+import com.ams.department.entity.Job;
 import com.ams.user.entity.User;
 
 public interface IUserService {
@@ -27,11 +28,9 @@ public interface IUserService {
 
 	public int updateMemberInfoById(User newInfoUser);
 
-	public int updateJobById(String memberId, String memberJobId, Integer roleFlag);
-
 	public void importExcelInfo(InputStream in, MultipartFile file);
 
-	public XSSFWorkbook exportExcelInfo();
+	public XSSFWorkbook exportExcelInfo(List<String> idList);
 
 	public int addSingleUser(User user);
 
@@ -50,5 +49,13 @@ public interface IUserService {
 
 	public List<User> getUserList();
 
-	public List<Department> getMemberList(String departmentId);
+//	public List<Department> getMemberList(String departmentId);
+
+	public int updateJobById(String memberId, Job orderJob);
+
+	public int updateRoleFlagById(String memberId, Integer roleFlag);
+
+	public List<User> getMemberList();
+
+	public List<User> getMemberListByDepartmentId(String departmentId);
 }
